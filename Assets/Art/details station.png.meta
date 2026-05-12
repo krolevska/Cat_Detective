@@ -1,0 +1,352 @@
+fileFormatVersion: 2
+guid: 6c440e9e9765311428a37e00f3dc211a
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 2660832728251521781
+    second: details station_0
+  - first:
+      213: 7679943892048397272
+    second: details station_1
+  - first:
+      213: 3527397685423758663
+    second: details station_2
+  - first:
+      213: 1996137953605612459
+    second: details station_3
+  - first:
+      213: 2791608269828704005
+    second: details station_4
+  - first:
+      213: 701919982363401055
+    second: details station_5
+  - first:
+      213: 8202322527667846509
+    second: details station_6
+  - first:
+      213: 4322115018559073943
+    second: details station_7
+  - first:
+      213: -2252045070873408545
+    second: details station_8
+  - first:
+      213: 1712723440154086279
+    second: details station_9
+  - first:
+      213: 4047315962955818749
+    second: details station_10
+  - first:
+      213: -7734111449081753352
+    second: details station_11
+  - first:
+      213: -6995754160635217304
+    second: details station_12
+  - first:
+      213: -7013414875184715889
+    second: details station_13
+  - first:
+      213: -1122708853069689275
+    second: details station_14
+  - first:
+      213: 5757191139012692000
+    second: details station_15
+  - first:
+      213: -8781028545908088782
+    second: details station_16
+  - first:
+      213: -2869560589312165256
+    second: details station_17
+  - first:
+      213: 6000734715055892989
+    second: details station_18
+  - first:
+      213: 63279489618740219
+    second: details station_19
+  - first:
+      213: -4975358713534887074
+    second: details station_20
+  - first:
+      213: -6326324518115374878
+    second: details station_21
+  - first:
+      213: 6906874082098112407
+    second: details station_22
+  - first:
+      213: 5237264013059586954
+    second: details station_23
+  - first:
+      213: 3797055705596240013
+    second: details station_24
+  - first:
+      213: 287436803983508928
+    second: details station_25
+  - first:
+      213: 4451809874535713058
+    second: details station_26
+  - first:
+      213: 2146859911425660374
+    second: details station_27
+  - first:
+      213: 2118909011843061160
+    second: details station_28
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 64
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: 4
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WindowsStoreApps
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: details station_0
+      rect:
+        serializedVersion: 2
+        x: 30
+        y: 349
+        width: 125
+        height: 148
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5fa5a26c44d2de420800000000000000
+      internalID: 2660832728251521781
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: details station_1
+      rect:
+        serializedVersion: 2
+        x: 203
+        y: 406
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8d3c97c9744a49a60800000000000000
+      internalID: 7679943892048397272
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: details station_2
+      rect:
+        serializedVersion: 2
+        x: 303
+        y: 364
+        width: 42
+        height: 126
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 74dd7358185d3f030800000000000000
+      internalID: 3527397685423758663
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: c152de5ce5d5e234c839a501a866a7b6
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      details station_0: 2660832728251521781
+      details station_1: 7679943892048397272
+      details station_10: 4047315962955818749
+      details station_11: -7734111449081753352
+      details station_12: -6995754160635217304
+      details station_13: -7013414875184715889
+      details station_14: -1122708853069689275
+      details station_15: 5757191139012692000
+      details station_16: -8781028545908088782
+      details station_17: -2869560589312165256
+      details station_18: 6000734715055892989
+      details station_19: 63279489618740219
+      details station_2: 3527397685423758663
+      details station_20: -4975358713534887074
+      details station_21: -6326324518115374878
+      details station_22: 6906874082098112407
+      details station_23: 5237264013059586954
+      details station_24: 3797055705596240013
+      details station_25: 287436803983508928
+      details station_26: 4451809874535713058
+      details station_27: 2146859911425660374
+      details station_28: 2118909011843061160
+      details station_29: 535217096
+      details station_3: 1996137953605612459
+      details station_4: 2791608269828704005
+      details station_5: 701919982363401055
+      details station_6: 8202322527667846509
+      details station_7: 4322115018559073943
+      details station_8: -2252045070873408545
+      details station_9: 1712723440154086279
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

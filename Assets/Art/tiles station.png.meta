@@ -1,0 +1,319 @@
+fileFormatVersion: 2
+guid: ea023e2b2f511ff42bb94c9b0192bc24
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 2597689227756004095
+    second: tiles station_0
+  - first:
+      213: -4669082679062113130
+    second: tiles station_1
+  - first:
+      213: 4895790314405292341
+    second: tiles station_2
+  - first:
+      213: 8716850828478867541
+    second: tiles station_3
+  - first:
+      213: -8576975177728478045
+    second: tiles station_4
+  - first:
+      213: -7216366397124233252
+    second: tiles station_5
+  - first:
+      213: -2796327546941414371
+    second: tiles station_6
+  - first:
+      213: 8104342206271036222
+    second: tiles station_7
+  - first:
+      213: -6735978466230792736
+    second: tiles station_8
+  - first:
+      213: 3577962616597487037
+    second: tiles station_9
+  - first:
+      213: 8461784287725524916
+    second: tiles station_10
+  - first:
+      213: 7018737285851589805
+    second: tiles station_11
+  - first:
+      213: -7337363038390308631
+    second: tiles station_12
+  - first:
+      213: -6822462100877367510
+    second: tiles station_13
+  - first:
+      213: 5067721957982006451
+    second: tiles station_14
+  - first:
+      213: 1825273242780688047
+    second: tiles station_15
+  - first:
+      213: 7898188468130447178
+    second: tiles station_16
+  - first:
+      213: 1768611034301319371
+    second: tiles station_17
+  - first:
+      213: -9050263054801460377
+    second: tiles station_18
+  - first:
+      213: -8210277286250971390
+    second: tiles station_19
+  - first:
+      213: -3981706701162897046
+    second: tiles station_20
+  - first:
+      213: -1141227465123998374
+    second: tiles station_21
+  - first:
+      213: 5446357431539722625
+    second: tiles station_22
+  - first:
+      213: -4477809286972702819
+    second: tiles station_23
+  - first:
+      213: -9198961724621075519
+    second: tiles station_24
+  - first:
+      213: -2990117034499833536
+    second: tiles station_25
+  - first:
+      213: 1081693754828610169
+    second: tiles station_26
+  - first:
+      213: 5573823165124455318
+    second: tiles station_27
+  - first:
+      213: -7442533940090176147
+    second: tiles station_28
+  - first:
+      213: 3328237447497253909
+    second: tiles station_29
+  - first:
+      213: -1850470632400800586
+    second: tiles station_30
+  - first:
+      213: -2778898708827085247
+    second: tiles station_31
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 64
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: 4
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WindowsStoreApps
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: tiles station_12
+      rect:
+        serializedVersion: 2
+        x: 398
+        y: 27
+        width: 100
+        height: 74
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9e03aac01337c2a90800000000000000
+      internalID: -7337363038390308631
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 19013410dc02aa3479d977e1f030fb49
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      tiles station_0: 2597689227756004095
+      tiles station_1: -4669082679062113130
+      tiles station_10: 8461784287725524916
+      tiles station_11: 7018737285851589805
+      tiles station_12: -7337363038390308631
+      tiles station_13: -6822462100877367510
+      tiles station_14: 5067721957982006451
+      tiles station_15: 1825273242780688047
+      tiles station_16: 7898188468130447178
+      tiles station_17: 1768611034301319371
+      tiles station_18: -9050263054801460377
+      tiles station_19: -8210277286250971390
+      tiles station_2: 4895790314405292341
+      tiles station_20: -3981706701162897046
+      tiles station_21: -1141227465123998374
+      tiles station_22: 5446357431539722625
+      tiles station_23: -4477809286972702819
+      tiles station_24: -9198961724621075519
+      tiles station_25: -2990117034499833536
+      tiles station_26: 1081693754828610169
+      tiles station_27: 5573823165124455318
+      tiles station_28: -7442533940090176147
+      tiles station_29: 3328237447497253909
+      tiles station_3: 8716850828478867541
+      tiles station_30: -1850470632400800586
+      tiles station_31: -2778898708827085247
+      tiles station_4: -8576975177728478045
+      tiles station_5: -7216366397124233252
+      tiles station_6: -2796327546941414371
+      tiles station_7: 8104342206271036222
+      tiles station_8: -6735978466230792736
+      tiles station_9: 3577962616597487037
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
