@@ -49,11 +49,11 @@
     <Analyzer Include="E:\Program Files Dev\6000.4.6f1\Editor\Data\Tools\BuildPipeline\Unity.SourceGenerators\Unity.UIToolkit.SourceGenerator.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Library\PackageCache\com.unity.2d.common@49d8bea2bff3\Editor\ScriptablePacker\SpriteAtlasGeometryPacker.cs" />
-    <Compile Include="Library\PackageCache\com.unity.2d.common@49d8bea2bff3\Editor\ScriptablePacker\SpriteAtlasScriptablePacker.cs" />
+    <Compile Include="Library\PackageCache\com.unity.2d.common@edfe77495b67\Editor\ScriptablePacker\SpriteAtlasGeometryPacker.cs" />
+    <Compile Include="Library\PackageCache\com.unity.2d.common@edfe77495b67\Editor\ScriptablePacker\SpriteAtlasScriptablePacker.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Library\PackageCache\com.unity.2d.common@49d8bea2bff3\Editor\ScriptablePacker\Unity.2D.ScriptablePacker.Editor.asmdef" />
+    <None Include="Library\PackageCache\com.unity.2d.common@edfe77495b67\Editor\ScriptablePacker\Unity.2D.ScriptablePacker.Editor.asmdef" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">

@@ -1,25 +1,25 @@
 using UnityEngine;
 
 
-public class NPC : MonoBehaviour
+public class NPC : MonoBehaviour, IInteractable
 {
-    [SerializeField] private GameObject player; // Посилання на гравця
-    [SerializeField] private DialogueController dialogueController; // Посилання на контролер діалогу
+    [SerializeField] private GameObject player;
+    [SerializeField] private DialogueController dialogueController;
 
-    public float dialogueDistance = 3f; // Максимальна відстань для початку діалогу
+    public float dialogueDistance = 3f;
     private bool isPlayerInRange = false;
     private bool isDialogueActive = false;
 
-    void Start()
+    public void Interact()
     {
-
+        StartDialogue();
     }
 
     public void StartDialogue() 
-    { 
+    {
+        if (!isPlayerInRange) { return; }
         isDialogueActive = true;
         Debug.Log("Dialogue started with " + gameObject.name);
-        // Тут можна додати код для запуску діалогу, наприклад, виклик DialogueController
         dialogueController.StartDialogue();
 
     }

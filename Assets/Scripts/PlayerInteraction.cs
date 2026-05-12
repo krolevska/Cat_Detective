@@ -1,27 +1,23 @@
 using UnityEngine;
-using UnityEngine.UI;
-using TMPro;
-using UnityEngine.UIElements;
 using UnityEngine.InputSystem;
-using Unity.VisualScripting;
 
 public class PlayerInteraction : MonoBehaviour
 {
     #region Serialized Fields
 
     [Header("Interaction Settings")]
-    [SerializeField] private LayerMask interactableLayer; // Шар об'єктів для взаємодії
-    [SerializeField] private LayerMask NPCInteraction; // Шар NPC
-    [SerializeField] private float interactionRange = 3f; // Дальність взаємодії
-    [SerializeField] private Transform playerCamera; // Посилання на камеру гравця
-    [SerializeField] private InputActionReference interactAction; // Посилання на дію взаємодії
+    [SerializeField] private LayerMask interactableLayer;
+    [SerializeField] private LayerMask NPCInteraction;
+    [SerializeField] private float interactionRange = 3f;
+    [SerializeField] private Transform playerCamera;
+    [SerializeField] private InputActionReference interactAction;
 
     #endregion
 
     #region Variables
 
-    private Interactable currentInteractable; // Поточний об'єкт для взаємодії
-    private NPC currentNPC; // Поточний NPC для взаємодії
+    private IInteractable currentInteractable;
+    private NPC currentNPC;
 
     #endregion
 
@@ -31,11 +27,11 @@ public class PlayerInteraction : MonoBehaviour
     {
         Debug.Log("Collision detected with " + collision.gameObject.name);
 
-        // Перевірка на взаємодію з NPC
+        // Check for NPC interaction first
         if (collision.TryGetComponent<NPC>(out NPC npc))
         {
 
-            //  npc = collision.GetComponent<NPC>();
+            npc = collision.GetComponent<NPC>();
 
             if (npc != null)
             {
@@ -44,13 +40,14 @@ public class PlayerInteraction : MonoBehaviour
                 return;
             }
         }
-        // Перевірка на взаємодію з об'єктом
 
-        else if (collision.TryGetComponent<Interactable>(out Interactable interactable))
+        // Check for Interactable objects if no NPC was found
+
+        else if (collision.TryGetComponent<IInteractable>(out IInteractable interactable))
         {
             Debug.Log("Collided with Interaction layer");
 
-            interactable = collision.GetComponent<Interactable>();
+            interactable = collision.GetComponent<IInteractable>();
 
             if (interactable != null)
             {
@@ -60,7 +57,7 @@ public class PlayerInteraction : MonoBehaviour
         }
         else
         {
-            // Якщо немає об'єктів для взаємодії
+            // If the collided object is neither an NPC nor an Interactable, clear the current references
             currentInteractable = null;
             currentNPC = null;
         }
