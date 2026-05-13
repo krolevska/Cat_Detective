@@ -40,7 +40,6 @@ public class PlayerInteraction : MonoBehaviour
                 return;
             }
         }
-
         // Check for Interactable objects if no NPC was found
 
         else if (collision.TryGetComponent<IInteractable>(out IInteractable interactable))
@@ -62,6 +61,26 @@ public class PlayerInteraction : MonoBehaviour
             currentNPC = null;
         }
     }
+
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        // Clear references when exiting the trigger
+        if (collision.TryGetComponent<NPC>(out NPC npc))
+        {
+            if (currentNPC == npc)
+            {
+                currentNPC = null;
+            }
+        }
+        else if (collision.TryGetComponent<IInteractable>(out IInteractable interactable))
+        {
+            if (currentInteractable == interactable)
+            {
+                currentInteractable = null;
+            }
+        }
+    }
+
 
     private void OnEnable()
     {
