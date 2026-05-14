@@ -53,8 +53,8 @@
     <Compile Include="Library\PackageCache\com.unity.render-pipelines.core@630143bbfe2b\Runtime\PathTracing\Lightmapping\UVOverlapDetection.cs" />
     <Compile Include="Library\PackageCache\com.unity.render-pipelines.core@630143bbfe2b\Runtime\PathTracing\ProbeIntegrator.cs" />
     <Compile Include="Library\PackageCache\com.unity.render-pipelines.core@630143bbfe2b\Runtime\PathTracing\LightFalloffLUT.cs" />
-    <Compile Include="Library\PackageCache\com.unity.render-pipelines.core@630143bbfe2b\Runtime\PathTracing\MaterialPool\MaterialAspectOracle.cs" />
     <Compile Include="Library\PackageCache\com.unity.render-pipelines.core@630143bbfe2b\Runtime\PathTracing\UnityComputeProbeIntegrator.cs" />
+    <Compile Include="Library\PackageCache\com.unity.render-pipelines.core@630143bbfe2b\Runtime\PathTracing\MaterialPool\MaterialAspectOracle.cs" />
     <Compile Include="Library\PackageCache\com.unity.render-pipelines.core@630143bbfe2b\Runtime\PathTracing\RenderPipeline\RayTracingRenderPipelineInstance.cs" />
     <Compile Include="Library\PackageCache\com.unity.render-pipelines.core@630143bbfe2b\Runtime\PathTracing\UVFallbackBuffer.cs" />
     <Compile Include="Library\PackageCache\com.unity.render-pipelines.core@630143bbfe2b\Runtime\PathTracing\AssemblyInfo.cs" />

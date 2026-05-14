@@ -10,6 +10,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private Camera mainCamera;
     [SerializeField] private Rigidbody2D playerRigidbody;
     [SerializeField] public InputActionReference moveAction; // Посилання на дію руху
+    public float MoveSpeed { get => moveSpeed; set => moveSpeed = value; }
     #endregion
 
     #region Variables
