@@ -57,6 +57,8 @@ public class DialogueController : MonoBehaviour
         Debug.Log("Starting dialogue with " + gameObject.name);
         dialoguePanel.SetActive(true);
         StartStory();
+        player.GetComponent<PlayerMovement>().MoveSpeed = 0;
+        player.GetComponent<PlayerInteraction>().InteractAction.action.Disable(); // Disable the interact action to prevent further interactions while the dialogue is active
     }
     /// <summary>
     /// Removes all child objects from the dialogue panel to clear previous dialogue content before displaying new content
@@ -128,7 +130,11 @@ public class DialogueController : MonoBehaviour
         // This allows for flexibility in how you want to handle multiple dialogues
         // with the same NPC or different NPCs.
         // story?.ResetState(); // or
-        // story = null;
+        story = null;
+        dialoguePanel.SetActive(false);
+        player.GetComponent<PlayerMovement>().MoveSpeed = 5;
+        player.GetComponent<PlayerInteraction>().InteractAction.action.Enable(); // Enable the interact action to prevent further interactions while the dialogue is active
+
     }
 
 
