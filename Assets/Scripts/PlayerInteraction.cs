@@ -11,6 +11,7 @@ public class PlayerInteraction : MonoBehaviour
     [SerializeField] private float interactionRange = 3f;
     [SerializeField] private Transform playerCamera;
     [SerializeField] private InputActionReference interactAction;
+    public InputActionReference InteractAction { get => interactAction; set => interactAction = value; }
 
     #endregion
 
@@ -97,6 +98,7 @@ public class PlayerInteraction : MonoBehaviour
 
     private void Interact(InputAction.CallbackContext obj)
     {
+
         if (currentInteractable != null)
         {
             currentInteractable.Interact();
