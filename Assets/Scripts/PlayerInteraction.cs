@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -11,13 +12,14 @@ public class PlayerInteraction : MonoBehaviour
     [SerializeField] private float interactionRange = 3f;
     [SerializeField] private Transform playerCamera;
     [SerializeField] private InputActionReference interactAction;
+    [SerializeField] private GameObject interactionPrompt;
     public InputActionReference InteractAction { get => interactAction; set => interactAction = value; }
 
     #endregion
 
     #region Variables
 
-    private IInteractable currentInteractable;
+    private Item currentInteractable;
     private NPC currentNPC;
 
     #endregion
@@ -33,24 +35,26 @@ public class PlayerInteraction : MonoBehaviour
         {
 
             npc = collision.GetComponent<NPC>();
-
             if (npc != null)
             {
-
+                interactionPrompt.SetActive(true);
+                interactionPrompt.GetComponentInChildren<TextMeshProUGUI>().text = "Press E to talk to " + npc.gameObject.name;
                 currentNPC = npc;
                 return;
             }
         }
         // Check for Interactable objects if no NPC was found
 
-        else if (collision.TryGetComponent<IInteractable>(out IInteractable interactable))
+        else if (collision.TryGetComponent<Item>(out Item interactable))
         {
             Debug.Log("Collided with Interaction layer");
 
-            interactable = collision.GetComponent<IInteractable>();
+            interactable = collision.GetComponent<Item>();
 
             if (interactable != null)
             {
+                interactionPrompt.SetActive(true);
+                interactionPrompt.GetComponentInChildren<TextMeshProUGUI>().text = "Press E to interact with " + collision.gameObject.name;
                 currentInteractable = interactable;
                 return;
             }
@@ -60,11 +64,13 @@ public class PlayerInteraction : MonoBehaviour
             // If the collided object is neither an NPC nor an Interactable, clear the current references
             currentInteractable = null;
             currentNPC = null;
+            interactionPrompt.SetActive(false);
         }
     }
 
     private void OnTriggerExit2D(Collider2D collision)
     {
+        interactionPrompt.SetActive(false);
         // Clear references when exiting the trigger
         if (collision.TryGetComponent<NPC>(out NPC npc))
         {
@@ -73,7 +79,7 @@ public class PlayerInteraction : MonoBehaviour
                 currentNPC = null;
             }
         }
-        else if (collision.TryGetComponent<IInteractable>(out IInteractable interactable))
+        else if (collision.TryGetComponent<Item>(out Item interactable))
         {
             if (currentInteractable == interactable)
             {
