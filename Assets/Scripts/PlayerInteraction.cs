@@ -7,20 +7,15 @@ public class PlayerInteraction : MonoBehaviour
     #region Serialized Fields
 
     [Header("Interaction Settings")]
-    [SerializeField] private LayerMask interactableLayer;
-    [SerializeField] private LayerMask NPCInteraction;
-    [SerializeField] private float interactionRange = 3f;
-    [SerializeField] private Transform playerCamera;
     [SerializeField] private InputActionReference interactAction;
     [SerializeField] private GameObject interactionPrompt;
-    public InputActionReference InteractAction { get => interactAction; set => interactAction = value; }
+
 
     #endregion
 
     #region Variables
 
-    private Item currentInteractable;
-    private NPC currentNPC;
+    private IInteractable currentInteractable;
 
     #endregion
 
@@ -30,60 +25,44 @@ public class PlayerInteraction : MonoBehaviour
     {
         Debug.Log("Collision detected with " + collision.gameObject.name);
 
-        // Check for NPC interaction first
         if (collision.TryGetComponent<NPC>(out NPC npc))
         {
-
-            npc = collision.GetComponent<NPC>();
             if (npc != null)
             {
-                interactionPrompt.SetActive(true);
-                interactionPrompt.GetComponentInChildren<TextMeshProUGUI>().text = "Press E to talk to " + npc.gameObject.name;
-                currentNPC = npc;
+                ShowPrompt(true, currentInteractable.InteractionPrompt);
+                currentInteractable = npc;
                 return;
             }
         }
-        // Check for Interactable objects if no NPC was found
 
-        else if (collision.TryGetComponent<Item>(out Item interactable))
+        else if (collision.TryGetComponent<InteractableObject>(out InteractableObject interactable))
         {
             Debug.Log("Collided with Interaction layer");
-
-            interactable = collision.GetComponent<Item>();
-
             if (interactable != null)
             {
-                interactionPrompt.SetActive(true);
-                interactionPrompt.GetComponentInChildren<TextMeshProUGUI>().text = "Press E to interact with " + collision.gameObject.name;
+                ShowPrompt(true, currentInteractable.InteractionPrompt);
                 currentInteractable = interactable;
                 return;
             }
-        }
-        else
-        {
-            // If the collided object is neither an NPC nor an Interactable, clear the current references
-            currentInteractable = null;
-            currentNPC = null;
-            interactionPrompt.SetActive(false);
         }
     }
 
     private void OnTriggerExit2D(Collider2D collision)
     {
-        interactionPrompt.SetActive(false);
-        // Clear references when exiting the trigger
         if (collision.TryGetComponent<NPC>(out NPC npc))
         {
-            if (currentNPC == npc)
+            if (currentInteractable == npc)
             {
-                currentNPC = null;
+                interactionPrompt.SetActive(false);
+                currentInteractable = null;
             }
         }
-        else if (collision.TryGetComponent<Item>(out Item interactable))
+        else if (collision.TryGetComponent<InteractableObject>(out InteractableObject interactable))
         {
             if (currentInteractable == interactable)
             {
                 currentInteractable = null;
+                interactionPrompt.SetActive(false);
             }
         }
     }
@@ -104,14 +83,23 @@ public class PlayerInteraction : MonoBehaviour
 
     private void Interact(InputAction.CallbackContext obj)
     {
+        currentInteractable?.Interact();
+    }
 
-        if (currentInteractable != null)
+    public void SetInteractionEnabled(bool enabled)
+    {
+        if (enabled)
+            interactAction.action.Enable();
+        else
+            interactAction.action.Disable();
+    }
+
+    private void ShowPrompt(bool enabled, string message = "")
+    {
+        interactionPrompt.SetActive(enabled);
+        if (enabled)
         {
-            currentInteractable.Interact();
-        }
-        else if (currentNPC != null)
-        {
-            currentNPC.StartDialogue();
+            interactionPrompt.GetComponentInChildren<TextMeshProUGUI>().text = message;
         }
     }
     #endregion

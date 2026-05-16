@@ -51,9 +51,9 @@
   <ItemGroup>
     <Compile Include="Assets\Scripts\ClueObject.cs" />
     <Compile Include="Assets\Scripts\ClueManager.cs" />
-    <Compile Include="Assets\Scripts\Item.cs" />
     <Compile Include="Assets\Scripts\NPC.cs" />
     <Compile Include="Assets\Scripts\IInteractable.cs" />
+    <Compile Include="Assets\Scripts\InteractableObject.cs" />
     <Compile Include="Assets\Scripts\PlayerMovement.cs" />
     <Compile Include="Assets\Scripts\PlayerInteraction.cs" />
     <Compile Include="Assets\Scripts\CameraFollow.cs" />

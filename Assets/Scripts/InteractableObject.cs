@@ -1,12 +1,13 @@
 using UnityEngine;
 
-public class Item : MonoBehaviour, IInteractable
+public class InteractableObject : MonoBehaviour, IInteractable
 {
 
     public void Interact()
     {
         StartExploration();
     }
+    public string InteractionPrompt => "Press E to explore " + gameObject.name;
 
     private void StartExploration()
     {
