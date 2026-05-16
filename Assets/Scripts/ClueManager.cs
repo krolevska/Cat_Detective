@@ -5,8 +5,8 @@ public class ClueManager : MonoBehaviour
 {
     public ClueManager Instance { get; private set; }
 
-    public List<ClueObject> ClueObjects;
-    
+    public List<ClueObject> clueObjects;
+
 
     public void Awake()
     {
@@ -20,12 +20,23 @@ public class ClueManager : MonoBehaviour
     public bool HasClue(string clueId)
     {
         // Check if the player has the specified clue
+        if (clueObjects.Exists(c => c.clueData.clueId == clueId))
+        {
+            Debug.Log("Player already has clue: " + clueId);
+            return true;
+        }
         return false;
     }
 
     public void AddClue(ClueDataSO clue)
     {
         // Add the clue to the player's inventory or clue log
+        if (!HasClue(clue.clueId))
+        {
+            clueObjects.Add(new ClueObject { clueData = clue });
+            Debug.Log("Clue added");
+        }
+
     }
 }
 
