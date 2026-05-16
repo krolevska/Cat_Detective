@@ -5,17 +5,16 @@ public class PlayerMovement : MonoBehaviour
     #region Serialized Fields
     [Header("Player Movement Settings")]
 
-    [SerializeField] private float moveSpeed = 5f;
-    [SerializeField] private LayerMask obstacleLayer; // Шар для перешкод
-    [SerializeField] private Camera mainCamera;
+    [SerializeField] private float moveSpeed;
+    [SerializeField] private LayerMask obstacleLayer; 
     [SerializeField] private Rigidbody2D playerRigidbody;
-    [SerializeField] public InputActionReference moveAction; // Посилання на дію руху
-    public float MoveSpeed { get => moveSpeed; set => moveSpeed = value; }
+    [SerializeField] private InputActionReference moveAction;
+    public bool CanMove { get; set; } = true; 
     #endregion
 
     #region Variables
 
-    private Vector2 direction; // Напрямок руху гравця
+    private Vector2 direction;
 
     #endregion
 
@@ -23,11 +22,12 @@ public class PlayerMovement : MonoBehaviour
     void Update()
     {
         direction = moveAction.action.ReadValue<Vector2>();
-        CalculateIsoMove(direction.x, direction.y);
+        direction = CalculateIsoMove(direction.x, direction.y);
     }
 
     void FixedUpdate()
     {
+        if (!CanMove) return;
         MovePlayer();
     }
 
@@ -35,13 +35,12 @@ public class PlayerMovement : MonoBehaviour
 
     #region Custom Methods
     /// <summary>
-    /// Рух гравця з перевіркою на зіткнення
+    ///
     /// </summary>
     private void MovePlayer()
     {
         Vector2 newPosition = playerRigidbody.position + direction * moveSpeed * Time.fixedDeltaTime;
 
-        // Перевірка на зіткнення з перешкодами
         RaycastHit2D hit = Physics2D.Raycast(playerRigidbody.position, direction, moveSpeed * Time.fixedDeltaTime, obstacleLayer);
         if (hit.collider == null)
         {
@@ -50,7 +49,7 @@ public class PlayerMovement : MonoBehaviour
     }
 
     /// <summary>
-    /// Перетворення руху на ізометричний
+    ///
     /// </summary>
     /// <param name="moveX"></param>
     /// <param name="moveY"></param>

@@ -10,11 +10,12 @@ public class DialogueController : MonoBehaviour
     [Header("Links")]
     [SerializeField] private GameObject dialoguePanel; // UI panel for dialogue
     [SerializeField] private TextAsset inkJSONAsset = null; // Ink JSON asset for the story
-    [SerializeField] private GameObject player; // Link to the player
     [SerializeField] private Image npcImage; // UI element for NPC image
     [SerializeField] private TextMeshProUGUI npcNameTextPrefab; // Prefab for NPC name text
     [SerializeField] private TextMeshProUGUI dialogueTextPrefab; // Prefab for dialogue text
     [SerializeField] private Button choiceButtonPrefab; // Prefab for choice buttons
+    [SerializeField] private PlayerMovement playerMovement;
+    [SerializeField] private PlayerInteraction playerInteraction;
     #endregion
 
     #region Variables
@@ -57,8 +58,8 @@ public class DialogueController : MonoBehaviour
         Debug.Log("Starting dialogue with " + gameObject.name);
         dialoguePanel.SetActive(true);
         StartStory();
-        player.GetComponent<PlayerMovement>().MoveSpeed = 0;
-        player.GetComponent<PlayerInteraction>().InteractAction.action.Disable(); // Disable the interact action to prevent further interactions while the dialogue is active
+        playerMovement.CanMove = false;
+        playerInteraction.SetInteractionEnabled(false); // Disable the interact action to prevent further interactions while the dialogue is active
     }
     /// <summary>
     /// Removes all child objects from the dialogue panel to clear previous dialogue content before displaying new content
@@ -111,7 +112,7 @@ public class DialogueController : MonoBehaviour
         // If there are no choices left, it means the story has reached an end point, so we create a button to allow the player to end the dialogue.
         else
         {
-            Button choice = CreateChoiceButton("Завершити діалог", 0);
+            Button choice = CreateChoiceButton("End Dialogue", 0);
             choice.onClick.AddListener(EndDialogue); // when clicked, it will call the EndDialogue method to close the dialogue panel and clean up the UI.
 
         }
@@ -131,9 +132,8 @@ public class DialogueController : MonoBehaviour
         // with the same NPC or different NPCs.
         // story?.ResetState(); // or
         story = null;
-        dialoguePanel.SetActive(false);
-        player.GetComponent<PlayerMovement>().MoveSpeed = 5;
-        player.GetComponent<PlayerInteraction>().InteractAction.action.Enable(); // Enable the interact action to prevent further interactions while the dialogue is active
+        playerMovement.CanMove = true;
+        playerInteraction.SetInteractionEnabled(true); // Enable the interact action to prevent further interactions while the dialogue is active
 
     }
 

@@ -1,8 +1,5 @@
-using UnityEngine;
-
 public interface IInteractable
-
 {
-    public abstract void Interact();
-
+    public string InteractionPrompt { get; }
+    public void Interact();
 }
