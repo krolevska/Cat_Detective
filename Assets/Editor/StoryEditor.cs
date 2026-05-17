@@ -3,14 +3,14 @@ using Ink.UnityIntegration;
 using UnityEditor;
 using UnityEngine;
 
-[CustomEditor(typeof(DialogueController))]
+//[CustomEditor(typeof(DialogueController))]
 [InitializeOnLoad]
 public class StoryEditor : Editor
 {
     static bool storyExpanded;
     static StoryEditor()
     {
-        DialogueController.OnCreateStory += OnCreateStory;
+   //     DialogueController.OnCreateStory += OnCreateStory;
     }
 
     static void OnCreateStory(Story story)
@@ -23,8 +23,8 @@ public class StoryEditor : Editor
     {
         Repaint();
         base.OnInspectorGUI();
-        var realTarget = target as DialogueController;
-        var story = realTarget.story;
-        InkPlayerWindow.DrawStoryPropertyField(story, ref storyExpanded, new GUIContent("Story"));
+     //   var realTarget = target as DialogueController;
+       // var story = realTarget.story;
+       // InkPlayerWindow.DrawStoryPropertyField(story, ref storyExpanded, new GUIContent("Story"));
     }
 }

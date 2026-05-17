@@ -56,9 +56,9 @@
     <Compile Include="Assets\Scripts\IInteractable.cs" />
     <Compile Include="Assets\Scripts\InteractableObject.cs" />
     <Compile Include="Assets\Scripts\PlayerMovement.cs" />
+    <Compile Include="Assets\Scripts\DialogueUI.cs" />
     <Compile Include="Assets\Scripts\PlayerInteraction.cs" />
     <Compile Include="Assets\Scripts\CameraFollow.cs" />
-    <Compile Include="Assets\Scripts\DialogueController.cs" />
     <Compile Include="Assets\Scripts\ClueDataSO.cs" />
   </ItemGroup>
   <ItemGroup>
