@@ -3,34 +3,12 @@ using UnityEngine;
 
 public class NPC : MonoBehaviour, IInteractable
 {
-    [SerializeField] private DialogueController dialogueController;
-
-    private bool isPlayerInRange = false;
+    [SerializeField] private string triggerId;
+    [SerializeField] private NarrativeDirector narrativeDirector;
 
     public void Interact()
     {
-        StartDialogue();
+        narrativeDirector.Trigger(triggerId);
     }
     public string InteractionPrompt => "Press E to talk to " + gameObject.name;
-    public void StartDialogue() 
-    {
-        if (!isPlayerInRange) { return; }
-        Debug.Log("Dialogue started with " + gameObject.name);
-        dialogueController.StartDialogue();
-
-    }
-    private void OnTriggerEnter2D(Collider2D other)
-    {
-        if (other.CompareTag("Player"))
-        {
-            isPlayerInRange = true;
-        }
-    }
-    private void OnTriggerExit2D(Collider2D other)
-    {
-        if (other.CompareTag("Player"))
-        {
-            isPlayerInRange = false;
-        }
-    }
 }
