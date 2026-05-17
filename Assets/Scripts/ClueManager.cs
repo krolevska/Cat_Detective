@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 public class ClueManager : MonoBehaviour
 {
-    public ClueManager Instance { get; private set; }
+    public static ClueManager Instance { get; private set; }
 
     public List<ClueObject> clueObjects;
 
