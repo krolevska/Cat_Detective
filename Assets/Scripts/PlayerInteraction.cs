@@ -4,22 +4,12 @@ using UnityEngine.InputSystem;
 
 public class PlayerInteraction : MonoBehaviour
 {
-    #region Serialized Fields
 
     [Header("Interaction Settings")]
     [SerializeField] private InputActionReference interactAction;
     [SerializeField] private GameObject interactionPrompt;
 
-
-    #endregion
-
-    #region Variables
-
     private IInteractable currentInteractable;
-
-    #endregion
-
-    #region Build-in Methods
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
@@ -29,8 +19,8 @@ public class PlayerInteraction : MonoBehaviour
         {
             if (npc != null)
             {
-                ShowPrompt(true, currentInteractable.InteractionPrompt);
                 currentInteractable = npc;
+                ShowPrompt(true, currentInteractable.InteractionPrompt);
                 return;
             }
         }
@@ -40,8 +30,8 @@ public class PlayerInteraction : MonoBehaviour
             Debug.Log("Collided with Interaction layer");
             if (interactable != null)
             {
-                ShowPrompt(true, currentInteractable.InteractionPrompt);
                 currentInteractable = interactable;
+                ShowPrompt(true, currentInteractable.InteractionPrompt);
                 return;
             }
         }
@@ -77,9 +67,6 @@ public class PlayerInteraction : MonoBehaviour
     {
         interactAction.action.started -= Interact;
     }
-    #endregion
-
-    #region Custom Methods
 
     private void Interact(InputAction.CallbackContext obj)
     {
@@ -102,5 +89,4 @@ public class PlayerInteraction : MonoBehaviour
             interactionPrompt.GetComponentInChildren<TextMeshProUGUI>().text = message;
         }
     }
-    #endregion
 }
