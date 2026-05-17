@@ -1,8 +1,8 @@
 using UnityEngine;
 
-public class ClueObject : MonoBehaviour, IInteractable
+public class ClueObject : MonoBehaviour//, IInteractable
 {
-    [SerializeField] private ClueDataSO clueData;
+    [SerializeField] public ClueDataSO clueData;
 
     
     public void Interact()
