@@ -29,8 +29,8 @@ public class PlayerInteraction : MonoBehaviour
         {
             if (npc != null)
             {
-                ShowPrompt(true, currentInteractable.InteractionPrompt);
                 currentInteractable = npc;
+                ShowPrompt(true, currentInteractable.InteractionPrompt);
                 return;
             }
         }
@@ -40,8 +40,8 @@ public class PlayerInteraction : MonoBehaviour
             Debug.Log("Collided with Interaction layer");
             if (interactable != null)
             {
-                ShowPrompt(true, currentInteractable.InteractionPrompt);
                 currentInteractable = interactable;
+                ShowPrompt(true, currentInteractable.InteractionPrompt);
                 return;
             }
         }
