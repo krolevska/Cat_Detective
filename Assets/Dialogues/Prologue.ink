@@ -1,149 +1,324 @@
 // =====================================================
-// WHISKER NOIR
-// Scene_Prologue_01
-// "Пролог: Дорога додому"
-//
-// Призначення:
-// - туторіал пересування й взаємодії;
-// - перші знайомства з містом;
-// - введення теми закритого сиротинцю;
-// - перші натяки на зникнення мешканців;
-// - навчання системі висновків.
-//
-// Основні knots для виклику з Unity:
-// prologue_start
-// inspect_station_sign
-// newspaper_vendor
-// inspect_newspaper_stand
-// homeless_cat
-// taxi_driver
-// walk_departure
-// street_notice_board
-// apartment_entrance
-// tutorial_first_conclusion
+// QUEST: Tutorial
+// SCENE: Train_Station
+// FILE: Whisker_Noir_Prologue_Refactored.ink
 // =====================================================
+
+// =====================================================
+// UNITY TRIGGER REGISTRY
+// =====================================================
+// scene_start                         -> prologue_start
+//
+// proximity:newspaper_vendor_area     -> ambient_newspaper_vendor
+// interact:newspaper_vendor           -> newspaper_vendor
+//
+// proximity:homeless_cat_area         -> ambient_homeless_cat
+// interact:homeless_cat               -> homeless_cat
+//
+// proximity:taxi_area                 -> pass_taxi_thought
+// interact:taxi_driver                -> taxi_driver
+//
+// interact:station_sign               -> inspect_station_sign
+// interact:newspaper_stand            -> inspect_newspaper_stand
+// interact:street_notice_board        -> street_notice_board
+//
+// proximity:apartment_entrance_area  -> near_apartment_thought
+// interact:apartment_door             -> apartment_entrance
 
 
 // =====================================================
-// GLOBAL FLAGS
+// GLOBAL META TAGS
 // =====================================================
+
+# quest_id: prologue_station
+# quest_title: Пролог — Дорога додому
+# scene_id: station_prologue
+
+
+// =====================================================
+// EXTERNAL FUNCTIONS
+// Ink -> Unity game events
+// =====================================================
+
+EXTERNAL AddFact(factId)
+EXTERNAL UnlockConclusion(conclusionId)
+EXTERNAL UpdateObjective(objectiveId)
+EXTERNAL CompleteObjective(objectiveId)
+
+
+// =====================================================
+// GLOBAL QUEST STATE
+// =====================================================
+
+VAR prologue_started = false
+VAR prologue_completed = false
+
+VAR objective_reach_apartment_started = false
+VAR objective_reach_apartment_completed = false
 
 VAR route_taxi = false
 VAR route_walk = false
 
-VAR heard_orphanage_news = false
-VAR heard_missing_people_rumor = false
-VAR noticed_orphanage_inconsistency = false
-
-VAR tutorial_conclusion_completed = false
 VAR reached_apartment_building = false
+VAR tutorial_conclusion_completed = false
 
-VAR spoke_to_vendor = false
-VAR spoke_to_homeless = false
-VAR spoke_to_taxi_driver = false
+// Який саме висновок гравець обрав:
+// 0 — ще не обрано
+// 1 — "У тексті просто помилка"
+// 2 — "Хтось навмисно переписує історію"
+// 3 — "Мої спогади можуть бути менш надійними"
+VAR orphanage_conclusion = 0
+
+
+// =====================================================
+// KNOWLEDGE FLAGS
+// Що Томмі вже дізнався або помітив
+// =====================================================
+
+VAR heard_orphanage_news = false
+VAR noticed_orphanage_inconsistency = false
+VAR heard_missing_people_rumor = false
+
+VAR fact_orphanage_inconsistency_added = false
+VAR conclusion_orphanage_unlocked = false
+
+VAR fact_missing_people_memory_loss_added = false
+VAR fact_erased_names_added = false
+
+
+// =====================================================
+// INTERACTION FLAGS
+// Що гравець уже робив, щоб не дублювати інформацію
+// =====================================================
 
 VAR read_station_sign = false
 VAR inspected_newspaper = false
 VAR inspected_notice_board = false
 VAR saw_missing_poster = false
 
-VAR gave_coin_to_homeless = false
-VAR homeless_opened_up = false
-VAR asked_driver_about_disappearances = false
+VAR spoke_to_vendor = false
+VAR vendor_gave_directions = false
+VAR vendor_discussed_orphanage_interest = false
 
-// М'який трекінг стилю поведінки гравця.
-// Можна залишити на майбутнє або прибрати.
+VAR spoke_to_homeless = false
+VAR asked_homeless_for_help = false
+VAR asked_homeless_for_useful_info = false
+VAR told_homeless_to_move = false
+VAR homeless_missing_topic_unlocked = false
+VAR homeless_explained_missing_people = false
+VAR asked_homeless_about_loss_without_trust = false
+VAR homeless_opened_up = false
+VAR gave_coin_to_homeless = false
+VAR dismissed_homeless_rumor = false
+
+VAR spoke_to_taxi_driver = false
+VAR driver_gave_city_update = false
+VAR asked_driver_about_disappearances = false
+VAR asked_driver_about_city_changes = false
+
+VAR saw_vendor_ambient = false
+VAR saw_homeless_ambient = false
+VAR saw_taxi_thought = false
+VAR saw_apartment_thought = false
+
+
+// =====================================================
+// SOFT BEHAVIOR TRACKING
+// Пізніше можна використати в репліках або прихованих перевірках
+// =====================================================
+
 VAR justice_points = 0
 VAR pragmatic_points = 0
 VAR aggression_points = 0
 
-// Який саме висновок гравець обрав у туторіалі:
-// 0 — ще не обрано
-// 1 — "у статті помилка"
-// 2 — "хтось навмисно переписує історію"
-// 3 — "можливо, Томмі помиляється"
-VAR orphanage_conclusion = 0
+
+// =====================================================
+// STYLE DICTIONARY
+// =====================================================
+// style: narration             | звичайний опис / сценічний текст
+// style: protagonist           | репліка Томмі в діалозі
+// style: npc                   | репліка NPC
+// style: inner_thought         | внутрішня думка Томмі
+// style: document_text         | газетні заголовки, таблички, листи
+// style: system_fact           | повідомлення про новий факт
+// style: system_quest          | повідомлення про нове / оновлене завдання
+// style: system_quest_complete | повідомлення про виконаний квест
+// style: system_conclusion     | повідомлення про відкритий / зафіксований висновок
 
 
 // =====================================================
-// START OF QUEST
+// UI DICTIONARY
+// =====================================================
+// ui: dialogue_panel       | велика панель діалогу й choices
+// ui: thought_bottom       | коротка думка унизу екрана
+// ui: thought_above_player | коротка думка над Томмі
+// ui: toast                | системне повідомлення: факт, квест, висновок
+// ui: ambient_subtitle     | короткий атмосферний текст без паузи гри
+// ui: document_view        | газета, лист, табличка, оголошення
+
+
+// =====================================================
+// AUTHORING TEMPLATE
+// =====================================================
+/* ---------------------------------
+=== knot_name ===
+# trigger: interaction / proximity / scene_start
+# ui: dialogue_panel / thought_bottom / thought_above_player / ambient_subtitle / document_view
+# prompt: Текст підказки біля предмета
+# repeatable: true / false
+
+# speaker: internal_id
+# name: Ім'я в UI
+# avatar: avatar_id
+# style: narration / npc / inner_thought / ...
+Текст.
+----------------------------------*/
+
+
+// =====================================================
+// SCENE START
 // =====================================================
 
 === prologue_start ===
+# trigger: scene_start
+# ui: dialogue_panel
+# repeatable: false
 
-Дощ зустрів тебе ще до того, як місто встигло це зробити.
+{ prologue_started == false:
+    ~ prologue_started = true
 
-Він стікав із даху вокзалу довгими холодними нитками, розбивався об мокрий камінь перону й тихо шипів у калюжах біля рейок.
+    # style: narration
+    Дощ зустрів тебе ще до того, як місто встигло це зробити.
 
-Потяг, який привіз тебе назад, уже готувався рушати далі.  
-Наче йому не терпілося залишити це місце.
+    # style: narration
+    Він стікав із даху вокзалу довгими холодними нитками, розбивався об мокрий камінь перону й тихо шипів у калюжах біля рейок.
 
-У лапі — потерта валіза.  
-У кишені — ключ від квартири, де ніхто не чекає.  
-У голові — занадто багато думок, які ти обіцяв собі розкласти пізніше.
+    # style: narration
+    Потяг, який привіз тебе назад, уже готувався рушати далі. Наче йому не терпілося залишити це місце.
 
-Пізніше завжди звучить розумніше, ніж зараз.
+    # style: narration
+    У лапі — потерта валіза. У кишені — ключ від квартири, де ніхто не чекає.
 
-Квартира.  
-Тепле світло.  
-Можливо, кава.  
-Можливо, тиша.
+    # speaker: tommy_inner
+    # name: Томмі
+    # avatar: none
+    # style: inner_thought
+    Квартира. Тепле світло. Можливо, вершки. Можливо, тиша.
 
-Цілком пристойний план на вечір.
+    # speaker: tommy_inner
+    # name: Томмі
+    # avatar: none
+    # style: inner_thought
+    Цілком пристойний план на вечір.
 
-[ЗАВДАННЯ ОНОВЛЕНО: Дістатися квартири.]
+    { objective_reach_apartment_started == false:
+        ~ UpdateObjective("reach_apartment")
+        ~ objective_reach_apartment_started = true
 
--> DONE
-
-
-// =====================================================
-// STATION SIGN
-// =====================================================
-
-=== inspect_station_sign ===
-
-{ read_station_sign:
-    Ти ще раз дивишся на вокзальну табличку.
-
-    Стрілка праворуч веде до стоянки таксі.  
-    Центральний вихід — до площі та житлових кварталів.
-
-    Якщо заблукаєш тут у перші п’ять хвилин після повернення, доведеться списати це на дощ.
-- else:
-    Над виходом висить вицвіла металева табличка.
-
-    СТОЯНКА ТАКСІ — праворуч.
-    ЦЕНТРАЛЬНА ПЛОЩА — прямо.  
-    ЖИТЛОВІ КВАРТАЛИ — через площу, вниз уздовж трамвайних колій.
-
-    Місто ніби не дуже хотіло, щоб тут губилися.  
-    Принаймні — не випадково.
-
-    ~ read_station_sign = true
+        # ui: toast
+        # style: system_quest
+        [ЗАВДАННЯ ОНОВЛЕНО: Дістатися квартири.]
+    }
 }
 
 -> DONE
 
 
 // =====================================================
-// NEWSPAPER VENDOR
+// PASSIVE / PROXIMITY TEXTS
+// Короткі атмосферні рядки, які не мають відкривати діалогову панель
+// =====================================================
+
+=== ambient_newspaper_vendor ===
+# trigger: proximity
+# ui: ambient_subtitle
+# repeatable: false
+
+{ saw_vendor_ambient == false:
+    # style: narration
+    Під навісом газетного кіоску тісняться мокрі шпальти, лотерейні квитки й продавець із поглядом людини, яка вже нічому не дивується.
+
+    ~ saw_vendor_ambient = true
+}
+
+-> DONE
+
+
+=== ambient_homeless_cat ===
+# trigger: proximity
+# ui: ambient_subtitle
+# repeatable: false
+
+{ saw_homeless_ambient == false:
+    # style: narration
+    Під вокзальним навісом сидить безхатько в старому пальті. Біля лап тьмяно блищить бляшана кружка.
+
+    ~ saw_homeless_ambient = true
+}
+
+-> DONE
+
+
+=== pass_taxi_thought ===
+# trigger: proximity
+# ui: thought_bottom
+# repeatable: false
+
+{ saw_taxi_thought == false:
+    # speaker: tommy_inner
+    # name: Томмі
+    # avatar: none
+    # style: inner_thought
+    Чорне таксі під жовтим ліхтарем. Сухо, швидко й трохи менш чесно, ніж іти пішки.
+
+    ~ saw_taxi_thought = true
+}
+
+-> DONE
+
+
+=== near_apartment_thought ===
+# trigger: proximity
+# ui: thought_bottom
+# repeatable: false
+
+{ saw_apartment_thought == false:
+    # speaker: tommy_inner
+    # name: Томмі
+    # avatar: none
+    # style: inner_thought
+    Дім. Формально.
+
+    ~ saw_apartment_thought = true
+}
+
+-> DONE
+
+
+// =====================================================
+// NPC DIALOGUES
+// У цих knots — мінімум оточення, максимум власне розмови.
+// Опис локацій винесено в proximity knots вище.
 // =====================================================
 
 === newspaper_vendor ===
+# trigger: interaction
+# ui: dialogue_panel
+# prompt: Поговорити з газетярем
+# repeatable: true
 
 { spoke_to_vendor:
-    Газетяр впізнає тебе не обличчям, а фактом, що ти знову стоїш біля його кіоску.
-
-    Газетяр:  
-    — Ще один погляд на катастрофи дня? Вони не стали кращими, поки ти ходив колами.
+    # speaker: npc_newspaper_vendor
+    # name: Газетяр
+    # avatar: newspaper_vendor_01
+    # style: npc
+    Ще один погляд на катастрофи дня?
 - else:
-    Біля виходу з вокзалу тісниться газетний кіоск.  
-    Під навісом — стопки мокрих по краях газет, лотерейні квитки й продавець із таким виглядом, ніби він устиг розчаруватися у всіх трьох.
-
-    Газетяр:  
-    — Вечірній випуск! Мерія економить, дощ тримається, решта теж не обнадіює!
-
-    Його лапа лягає на верхню газету з великим заголовком про закриття сиротинцю.
+    # speaker: npc_newspaper_vendor
+    # name: Газетяр
+    # avatar: newspaper_vendor_01
+    # style: npc
+    Вечірній випуск! Мерія економить, дощ тримається, решта теж не обнадіює!
 
     ~ spoke_to_vendor = true
 }
@@ -153,166 +328,92 @@ VAR orphanage_conclusion = 0
 
 === newspaper_vendor_menu ===
 
-+ [Запитати про заголовок на першій шпальті.]
-    Газетяр піднімає газету двома пальцями, ніби вона пахне гірше за мокрий асфальт.
++ { heard_orphanage_news == false } [Запитати про заголовок на першій шпальті.]
+    # speaker: npc_newspaper_vendor
+    # name: Газетяр
+    # avatar: newspaper_vendor_01
+    # style: npc
+    Старий міський сиротинець остаточно закрили. Мерія каже — будівля давно стояла без діла, тягнула гроші з бюджету.
 
-    Газетяр:  
-    — Старий міський сиротинець остаточно закрили. Мерія каже — будівля давно стояла без діла, тягнула гроші з бюджету.
-
-    Газетяр:  
-    — Гарна формула, до речі. Спершу чогось не доглядають роками, потім називають це марнотратством.
-
-    Сиротинець.
-
-    Слово чіпляється за ребра сильніше, ніж мало б.
+    # speaker: npc_newspaper_vendor
+    # name: Газетяр
+    # avatar: newspaper_vendor_01
+    # style: npc
+    Гарна формула, до речі. Спершу чогось не доглядають роками, потім називають це марнотратством.
 
     ~ heard_orphanage_news = true
 
     -> newspaper_vendor_menu
+
 
 + { inspected_newspaper == false } [Попросити дати глянути газету.]
     -> inspect_newspaper_from_vendor
 
-+ [Запитати, як пройти до житлових кварталів.]
-    Газетяр:  
-    — Через центральний вихід. Побачиш трамвайні рейки — йди вздовж них, поки не захочеться шкодувати, що не взяв таксі.
 
-    Газетяр:  
-    — Якщо потрібен комфорт, таксисти праворуч. Якщо характер — прямо.
++ { vendor_gave_directions == false } [Запитати, як пройти до житлових кварталів.]
+    # speaker: npc_newspaper_vendor
+    # name: Газетяр
+    # avatar: newspaper_vendor_01
+    # style: npc
+    Через центральний вихід. Побачиш трамвайні рейки — йди вздовж них.
+
+    # speaker: npc_newspaper_vendor
+    # name: Газетяр
+    # avatar: newspaper_vendor_01
+    # style: npc
+    Якщо потрібен комфорт, таксисти праворуч. Якщо характер — прямо.
+
+    ~ vendor_gave_directions = true
+
+    -> newspaper_vendor_menu
+
+
++ { heard_orphanage_news == true && vendor_discussed_orphanage_interest == false } [Запитати, чому всіх так зацікавив сиротинець.]
+    # speaker: npc_newspaper_vendor
+    # name: Газетяр
+    # avatar: newspaper_vendor_01
+    # style: npc
+    Бо людям подобається сумувати про будівлі більше, ніж про мешканців. Будівлі не просять пояснень.
+
+    # speaker: npc_newspaper_vendor
+    # name: Газетяр
+    # avatar: newspaper_vendor_01
+    # style: npc
+    Хтось каже, там зроблять архів. Хтось — склад. Хтось — що його просто знесуть і поставлять чергову коробку з чиновниками.
+
+    ~ vendor_discussed_orphanage_interest = true
 
     -> newspaper_vendor_menu
 
-+ { heard_orphanage_news == true } [Запитати, чому всіх так зацікавив сиротинець.]
-    Газетяр знизує плечима.
-
-    Газетяр:  
-    — Бо людям подобається сумувати про будівлі більше, ніж про мешканців. Будівлі не просять пояснень.
-
-    Газетяр:  
-    — Хтось каже, там зроблять архів. Хтось — склад. Хтось — що його просто знесуть і поставлять чергову коробку з чиновниками.
-
-    Останню фразу він промовляє з тихим задоволенням.
-
-    -> newspaper_vendor_menu
 
 + [Закінчити розмову.]
-    Газетяр уже повертається до своїх шпальт.
-
-    Газетяр:  
-    — Не читай усе підряд. Місто й без того важке для травлення.
+    # speaker: npc_newspaper_vendor
+    # name: Газетяр
+    # avatar: newspaper_vendor_01
+    # style: npc
+    Не читай усе підряд. Місто й без того важке для травлення.
 
     -> DONE
 
 
-// =====================================================
-// NEWSPAPER INSPECTION FROM VENDOR
-// =====================================================
-
-=== inspect_newspaper_from_vendor ===
-
-Газетяр дозволяє взяти примірник, але не випускає його з поля зору.
-
-Газета хрумтить під пальцями.  
-Чорнила трохи розплилися від вологи, але заголовок читається чітко:
-
-“МЕРІЯ ЗАКРИВАЄ СТАРИЙ СИРОТИНЕЦЬ: БУДІВЛЯ НЕ ВИКОРИСТОВУВАЛАСЯ ЗА ПРИЗНАЧЕННЯМ ПОНАД П’ЯТНАДЦЯТЬ РОКІВ.”
-
-Ти перечитуєш рядок ще раз.
-
-П’ятнадцять років.
-
-Ні.
-
-Це не сходиться.
-
-Ти покинув той сиротинець значно пізніше.
-
-Газетяр:  
-— Щось не так?
-
-Ти повертаєш газету на місце.
-
-Можливо, журналіст переплутав цифри.  
-Можливо, редактор не перевірив текст.  
-Можливо, місто почало брехати раніше, ніж ти встиг повернутися.
-
-~ inspected_newspaper = true
-~ heard_orphanage_news = true
-~ noticed_orphanage_inconsistency = true
-
-[НОВИЙ ФАКТ ОТРИМАНО: Офіційна версія про сиротинець не збігається зі спогадами Томмі.]
-
-[НОВИЙ ВИСНОВОК ДОСТУПНИЙ: “Сиротинець”.]
-
-    -> newspaper_vendor_menu
-
-
-// =====================================================
-// OPTIONAL: NEWSPAPER STAND OBJECT
-// If the player inspects papers without speaking to vendor
-// =====================================================
-
-=== inspect_newspaper_stand ===
-
-{ inspected_newspaper:
-    Ти вже бачив головну шпальту.
-
-    Вона все ще стверджує, що сиротинець стояв порожнім понад п’ятнадцять років.
-
-    Газети, на жаль, не змінюють покази під тиском погляду.
-- else:
-    На верхній газеті великим шрифтом виведено:
-
-    “МЕРІЯ ЗАКРИВАЄ СТАРИЙ СИРОТИНЕЦЬ.”
-
-    Нижче, дрібнішим текстом:
-
-   “Будівля не використовувалась за призначенням понад п’ятнадцять років.”
-
-    Понад п’ятнадцять?
-
-    Ти мружишся.
-
-    Ні.  
-    Це неправда.
-
-    Ти жив там пізніше.
-
-    ~ inspected_newspaper = true
-    ~ heard_orphanage_news = true
-    ~ noticed_orphanage_inconsistency = true
-
-    [НОВИЙ ФАКТ ОТРИМАНО: Офіційна версія про сиротинець не збігається зі спогадами Томмі.]
-
-    [НОВИЙ ВИСНОВОК ДОСТУПНИЙ: “Сиротинець”.]
-}
-
--> DONE
-
-
-// =====================================================
-// HOMELESS CAT
-// =====================================================
-
 === homeless_cat ===
+# trigger: interaction
+# ui: dialogue_panel
+# prompt: Поговорити з безхатьком
+# repeatable: true
 
 { spoke_to_homeless:
-    Безхатько сидить там само — під навісом біля стіни вокзалу, загорнувшись у старе пальто.
-
-    Він дивиться на місто так, ніби місто винне йому пояснення.
+    # speaker: npc_homeless
+    # name: Безхатько
+    # avatar: homeless_01
+    # style: npc
+    Знову ти. Питання не закінчилися?
 - else:
-    Під навісом, трохи осторонь від людського потоку, сидить безхатько.
-
-    Пальто на ньому колись було коричневим. Тепер воно кольору дощу, пилу й надто довгої зими.  
-    Біля лап — бляшана кружка з кількома монетами.
-
-    Він помічає твій погляд і криво всміхається.
-
-    Безхатько:  
-    — Повернувся, детективе? Чи просто ще не встиг утекти?
-
-    Ти не впевнений, що знаєш його.  
-    Він, здається, не впевнений, що це має значення.
+    # speaker: npc_homeless
+    # name: Безхатько
+    # avatar: homeless_01
+    # style: npc
+    Повернувся, детективе? Чи просто ще не встиг утекти?
 
     ~ spoke_to_homeless = true
 }
@@ -322,168 +423,223 @@ VAR orphanage_conclusion = 0
 
 === homeless_first_menu ===
 
-+ [Запитати, чи йому потрібна допомога.]
++ { asked_homeless_for_help == false } [Запитати, чи йому потрібна допомога.]
+    ~ asked_homeless_for_help = true
     ~ justice_points = justice_points + 1
+    ~ homeless_missing_topic_unlocked = true
 
-    Безхатько коротко сміється. Не з тебе — радше з самої ідеї.
+    # speaker: npc_homeless
+    # name: Безхатько
+    # avatar: homeless_01
+    # style: npc
+    Допомога? Мені?
 
-    Безхатько:  
-    — Допомога? Мені?  
-    — Мені потрібні сухі шкарпетки, гаряча юшка й місто, яке перестане ковтати своїх мешканців. Обирай, із чим почнеш.
+    # speaker: npc_homeless
+    # name: Безхатько
+    # avatar: homeless_01
+    # style: npc
+    Мені потрібні сухі шкарпетки, гаряча юшка й місто, яке перестане ковтати своїх мешканців. Обирай, із чим почнеш.
 
     -> homeless_open_menu
 
-+ [Запитати, чи він бачив тут щось корисне.]
+
++ { asked_homeless_for_useful_info == false } [Запитати, чи він бачив тут щось корисне.]
+    ~ asked_homeless_for_useful_info = true
     ~ pragmatic_points = pragmatic_points + 1
+    ~ homeless_missing_topic_unlocked = true
 
-    Безхатько примружується.
+    # speaker: npc_homeless
+    # name: Безхатько
+    # avatar: homeless_01
+    # style: npc
+    Корисне для кого? Для правди? Для поліції? Для того, хто платить?
 
-    Безхатько:  
-    — Корисне для кого? Для правди? Для поліції? Для того, хто платить?
-
-    Його погляд ковзає до твоєї кишені, де міг би бути гаманець.
-
-    Безхатько:  
-    — Але так. Бачив. Завжди щось бачу. Саме тому мені й не дуже добре спиться.
+    # speaker: npc_homeless
+    # name: Безхатько
+    # avatar: homeless_01
+    # style: npc
+    Але так. Бачив. Завжди щось бачу. Саме тому мені й не дуже добре спиться.
 
     -> homeless_open_menu
 
-+ [Сказати, щоб він не перегороджував прохід.]
+
++ { told_homeless_to_move == false } [Сказати, щоб він не перегороджував прохід.]
+    ~ told_homeless_to_move = true
     ~ aggression_points = aggression_points + 1
+    ~ homeless_missing_topic_unlocked = true
 
-    Безхатько повільно дивиться на широкий простір довкола себе, потім знову на тебе.
+    # speaker: npc_homeless
+    # name: Безхатько
+    # avatar: homeless_01
+    # style: npc
+    Так, звісно. Я і є головна перешкода на шляху цивілізації.
 
-    Безхатько:  
-    — Так, звісно. Я і є головна перешкода на шляху цивілізації.
-
-    Ти вже збираєшся піти, коли він додає тихіше:
-
-    Безхатько:  
-    — Дивися, щоб і тебе не прибрали з дороги. Тут це трапляється.
-
-    ~ heard_missing_people_rumor = true
+    # speaker: npc_homeless
+    # name: Безхатько
+    # avatar: homeless_01
+    # style: npc
+    Дивися, щоб і тебе не прибрали з дороги.
 
     -> DONE
 
-+ [Піти.]
-    Безхатько не затримує тебе.
 
-    Безхатько:  
-    — Місто любить тих, хто не ставить зайвих питань. Недовго, але любить.
++ [Піти.]
+    # speaker: npc_homeless
+    # name: Безхатько
+    # avatar: homeless_01
+    # style: npc
+    Місто любить тих, хто не ставить зайвих питань. Недовго, але любить.
 
     -> DONE
 
 
 === homeless_open_menu ===
 
-+ { heard_missing_people_rumor == false } [Запитати, що він мав на увазі про місто, яке “ковтає” мешканців.]
-    Безхатько стискає бляшану кружку, і та тихо рипить.
++ { homeless_missing_topic_unlocked == true && homeless_explained_missing_people == false } [Запитати, що він мав на увазі про місто, яке “ковтає” мешканців.]
+    # speaker: npc_homeless
+    # name: Безхатько
+    # avatar: homeless_01
+    # style: npc
+    Люди зникають.
 
-    Безхатько:  
-    — Люди зникають.
+    # speaker: npc_homeless
+    # name: Безхатько
+    # avatar: homeless_01
+    # style: npc
+    Не “поїхали до родичів”. Не “забули сплатити оренду й втекли”. Зникають.
 
-    Пауза.
+    # speaker: npc_homeless
+    # name: Безхатько
+    # avatar: homeless_01
+    # style: npc
+    Учора кіт спить за два метри від мене під газетами. Я знаю, як його звати. Знаю, що він хропе, коли мерзне.
 
-    Безхатько:  
-    — Не “поїхали до родичів”. Не “забули сплатити оренду й втекли”. Зникають.
+    # speaker: npc_homeless
+    # name: Безхатько
+    # avatar: homeless_01
+    # style: npc
+    Наступного ранку газети лишаються. Кіт — ні. І ніхто не може згадати, про кого я питаю.
 
-    Безхатько:  
-    — Учора кіт спить за два метри від мене під газетами. Я знаю, як його звати. Знаю, що він хропе, коли мерзне.  
-    — Наступного ранку газети лишаються. Кіт — ні. І ніхто не може згадати, про кого я питаю.
-
-    Він проводить лапою по вусах, ніби стирає дощ, якого під навісом немає.
-
-    Безхатько:  
-    — Таке місто. Викидає зайве. А потім робить вигляд, що сміття тут ніколи не було.
+    # speaker: npc_homeless
+    # name: Безхатько
+    # avatar: homeless_01
+    # style: npc
+    Таке місто. Викидає зайве. А потім робить вигляд, що сміття тут ніколи не було.
 
     ~ heard_missing_people_rumor = true
+    ~ homeless_explained_missing_people = true
 
-    [НОВИЙ ФАКТ ОТРИМАНО: Безхатько стверджує, що в місті люди не просто зникають — їх перестають пам’ятати.]
+    { fact_missing_people_memory_loss_added == false:
+        ~ AddFact("people_disappear_and_are_forgotten")
+        ~ fact_missing_people_memory_loss_added = true
 
-    -> homeless_open_menu
-
-+ [Запитати, чи він сам когось втратив.]
-    { gave_coin_to_homeless || justice_points > 0:
-        Безхатько дивиться на кружку, потім повз неї — кудись у калюжу біля бордюру.
-
-        Безхатько:  
-        — Була одна кицька. Руда. Завжди співала собі під ніс, коли рилася в контейнерах за булочками.
-
-        Безхатько:  
-        — Я пам’ятаю голос. Пам’ятаю, як вона сміялася з моїх жартів, хоча жарти були погані.  
-        — А от ім’я...
-
-        Він торкається скроні й затихає.
-
-        Безхатько:  
-        — Ім’я ніби хтось вирізав ножем.
-
-        ~ homeless_opened_up = true
-        ~ heard_missing_people_rumor = true
-
-        [НОВИЙ ФАКТ ОТРИМАНО: Після зникнення людини можуть зникати навіть спогади про її ім’я.]
-    - else:
-        Безхатько на мить втрачає насмішку в очах, але швидко повертає її назад.
-
-        Безхатько:  
-        — Усі когось втрачали. Просто не всі достатньо чесні, щоб це визнавати.
-
-        Він явно не хоче говорити більше.
+        # ui: toast
+        # style: system_fact
+        [НОВИЙ ФАКТ ОТРИМАНО: Безхатько стверджує, що в місті люди не просто зникають — їх перестають пам’ятати.]
     }
 
     -> homeless_open_menu
+
+
++ { homeless_explained_missing_people == true && homeless_opened_up == false && (gave_coin_to_homeless || justice_points > 0) } [Запитати, чи він сам когось втратив.]
+    # speaker: npc_homeless
+    # name: Безхатько
+    # avatar: homeless_01
+    # style: npc
+    Була одна кицька. Руда. Завжди співала собі під ніс, коли рилася в контейнерах за булочками.
+
+    # speaker: npc_homeless
+    # name: Безхатько
+    # avatar: homeless_01
+    # style: npc
+    Я пам’ятаю голос. Пам’ятаю, як вона сміялася з моїх жартів, хоча жарти були погані.
+
+    # speaker: npc_homeless
+    # name: Безхатько
+    # avatar: homeless_01
+    # style: npc
+    А от ім’я ніби хтось вирізав ножем.
+
+    ~ homeless_opened_up = true
+
+    { fact_erased_names_added == false:
+        ~ AddFact("names_can_disappear_from_memory")
+        ~ fact_erased_names_added = true
+
+        # ui: toast
+        # style: system_fact
+        [НОВИЙ ФАКТ ОТРИМАНО: Після зникнення людини можуть зникати навіть спогади про її ім’я.]
+    }
+
+    -> homeless_open_menu
+
+
++ { homeless_explained_missing_people == true && homeless_opened_up == false && !(gave_coin_to_homeless || justice_points > 0) && asked_homeless_about_loss_without_trust == false } [Запитати, чи він сам когось втратив.]
+    ~ asked_homeless_about_loss_without_trust = true
+
+    # speaker: npc_homeless
+    # name: Безхатько
+    # avatar: homeless_01
+    # style: npc
+    Усі когось втрачали. Просто не всі достатньо чесні, щоб це визнавати.
+
+    -> homeless_open_menu
+
 
 + { gave_coin_to_homeless == false } [Кинути монету в кружку.]
     ~ gave_coin_to_homeless = true
     ~ justice_points = justice_points + 1
 
-    Монета дзенькає об метал.
-
-    Безхатько дивиться не на неї, а на тебе.
-
-    Безхатько:  
-    — Дякую. Не за монету. За те, що не вдав, ніби мене тут немає.
+    # speaker: npc_homeless
+    # name: Безхатько
+    # avatar: homeless_01
+    # style: npc
+    Дякую. Не за монету. За те, що не вдав, ніби мене тут немає.
 
     -> homeless_open_menu
 
-+ { heard_missing_people_rumor == true } [Сказати, що звучить як п’яна маячня.]
+
++ { heard_missing_people_rumor == true && dismissed_homeless_rumor == false } [Сказати, що звучить як п’яна маячня.]
+    ~ dismissed_homeless_rumor = true
     ~ aggression_points = aggression_points + 1
 
-    Безхатько кивком приймає удар, ніби чув його вже тисячу разів.
-
-    Безхатько:  
-    — Авжеж. А коли те саме скаже хтось у краватці, ти назвеш це “свідченням”.
+    # speaker: npc_homeless
+    # name: Безхатько
+    # avatar: homeless_01
+    # style: npc
+    Авжеж. А коли те саме скаже хтось у краватці, ти назвеш це “свідченням”.
 
     -> homeless_open_menu
 
-+ [Закінчити розмову.]
-    Безхатько знову обіймає лапами кружку.
 
-    Безхатько:  
-    — Якщо сьогодні когось шукатимеш — записуй ім’я. Завтра воно може здатися вигадкою.
++ [Закінчити розмову.]
+    # speaker: npc_homeless
+    # name: Безхатько
+    # avatar: homeless_01
+    # style: npc
+    Якщо сьогодні когось шукатимеш — записуй ім’я. Завтра воно може здатися вигадкою.
 
     -> DONE
 
 
-// =====================================================
-// TAXI DRIVER
-// =====================================================
-
 === taxi_driver ===
+# trigger: interaction
+# ui: dialogue_panel
+# prompt: Поговорити з таксистом
+# repeatable: true
 
 { spoke_to_taxi_driver:
-    Таксист вистукує пальцями по керму й дивиться на тебе через опущене вікно.
-
-    Таксист:  
-    — Вирішив, куди тебе везти? Чи дощ ще не достатньо переконливий?
+    # speaker: npc_taxi_driver
+    # name: Таксист
+    # avatar: taxi_driver_01
+    # style: npc
+    Вирішив, куди тебе везти? Чи дощ ще не достатньо переконливий?
 - else:
-    Біля бордюру під жовтим ліхтарем чекає чорне таксі.  
-    Його капот вкритий водяними краплями, а мотор бурчить із невдоволенням старого кота.
-
-    За кермом — водій у зім’ятому картузі.
-
-    Таксист:  
-    — Потрібна машина? Чи ти з тих героїв, що воліють знайомитися з містом через промоклі черевики?
+    # speaker: npc_taxi_driver
+    # name: Таксист
+    # avatar: taxi_driver_01
+    # style: npc
+    Потрібна машина? Чи ти з тих героїв, що воліють знайомитися з містом через промоклі черевики?
 
     ~ spoke_to_taxi_driver = true
 }
@@ -494,246 +650,315 @@ VAR orphanage_conclusion = 0
 === taxi_menu ===
 
 + [Назвати адресу квартири й сісти в таксі.]
-    Таксист штовхає дверцята зсередини.
-
-    Таксист:  
-    — Сідай. Місто виглядає менш привітним із тротуару.
+    # speaker: npc_taxi_driver
+    # name: Таксист
+    # avatar: taxi_driver_01
+    # style: npc
+    Сідай. Місто виглядає менш привітним із тротуару.
 
     -> taxi_ride
 
-+ { heard_orphanage_news == false } [Запитати, що нового в місті.]
-    Таксист задумливо чухає щоку.
 
-    Таксист:  
-    — Нового? Мерія закрила старий сиротинець. Каже, давно не потрібен.
-
-    Він пирхає.
-
-    Таксист:  
-    — У нас тут усе стає “непотрібним” рівно в той момент, коли за нього більше не хочеться відповідати.
-
-    Слово “сиротинець” відгукується в пам’яті занадто різко.
-
++ { heard_orphanage_news == false && driver_gave_city_update == false } [Запитати, що нового в місті.]
+    ~ driver_gave_city_update = true
     ~ heard_orphanage_news = true
 
+    # speaker: npc_taxi_driver
+    # name: Таксист
+    # avatar: taxi_driver_01
+    # style: npc
+    Нового? Мерія закрила старий сиротинець. Каже, давно не потрібен.
+
+    # speaker: npc_taxi_driver
+    # name: Таксист
+    # avatar: taxi_driver_01
+    # style: npc
+    У нас тут усе стає “непотрібним” рівно в той момент, коли за нього більше не хочеться відповідати.
+
     -> taxi_menu
+
 
 + { heard_missing_people_rumor == true && asked_driver_about_disappearances == false } [Запитати, чи правда, що в місті зникають люди.]
     ~ asked_driver_about_disappearances = true
 
-    Таксист кидає на тебе короткий погляд у дзеркало.
+    # speaker: npc_taxi_driver
+    # name: Таксист
+    # avatar: taxi_driver_01
+    # style: npc
+    Люди завжди зникають. Через борги, через кохання, через дурість. Іноді через усе одразу.
 
-    Таксист:  
-    — Люди завжди зникають. Через борги, через кохання, через дурість. Іноді через усе одразу.
+    # speaker: npc_taxi_driver
+    # name: Таксист
+    # avatar: taxi_driver_01
+    # style: npc
+    Але останнім часом... Так. Чутки є. Наче деякі квартири спорожніли так чисто, що навіть сусіди не певні, чи хтось там жив.
 
-    Ти не зводиш із нього очей.
+    # speaker: npc_taxi_driver
+    # name: Таксист
+    # avatar: taxi_driver_01
+    # style: npc
+    Я не люблю такі розмови під час роботи. Погано впливають на чайові.
 
-    Таксист незручно кашляє.
+    -> taxi_menu
 
-    Таксист:  
-    — Але останнім часом... Так. Чутки є.  
-    — Наче деякі квартири спорожніли так чисто, що навіть сусіди не певні, чи хтось там жив.
 
-    Він торкається вусів.
++ { asked_driver_about_city_changes == false } [Запитати, чи місто сильно змінилося.]
+    ~ asked_driver_about_city_changes = true
 
-    Таксист:  
-    — Я не люблю такі розмови під час роботи. Погано впливають на чайові.
+    # speaker: npc_taxi_driver
+    # name: Таксист
+    # avatar: taxi_driver_01
+    # style: npc
+    Деякі речі стали гіршими. Інші — дорожчими. Ще інші просто зникли, і тепер усі вдають, що так і було.
+
+    # speaker: npc_taxi_driver
+    # name: Таксист
+    # avatar: taxi_driver_01
+    # style: npc
+    Бар на розі, наприклад. Колись його не було. А може, був. З віком пам’ять працює як міська рада.
 
     -> taxi_menu
 
-+ [Запитати, чи місто сильно змінилося.]
-    Таксист дивиться на площу перед вокзалом.
-
-    Таксист:  
-    — Деякі речі стали гіршими. Інші — дорожчими. Ще інші просто зникли, і тепер усі вдають, що так і було.
-
-    Він сам ніби помічає останню фразу лише після того, як вимовляє її.
-
-    Таксист:  
-    — Бар на розі, наприклад. Колись його не було. А може, був. З віком пам’ять працює як міська рада.
-
-    -> taxi_menu
 
 + [Сказати, що підеш пішки.]
-    Таксист знизує плечима.
-
-    Таксист:  
-    — Як знаєш. Якщо передумаєш, шукай жовті ліхтарі й погані рішення.
+    # speaker: npc_taxi_driver
+    # name: Таксист
+    # avatar: taxi_driver_01
+    # style: npc
+    Як знаєш. Якщо передумаєш, шукай жовті ліхтарі й погані рішення.
 
     -> walk_departure
 
-+ [Відійти.]
-    Таксист натискає на клаксон, щоб відігнати від колеса голуба. Голуб не реагує.
 
-    Таксист:  
-    — У всіх сьогодні свій маршрут.
++ [Відійти.]
+    # speaker: npc_taxi_driver
+    # name: Таксист
+    # avatar: taxi_driver_01
+    # style: npc
+    У всіх сьогодні свій маршрут.
 
     -> DONE
 
 
 // =====================================================
-// TAXI RIDE ROUTE
+// INTERACTIONS WITH OBJECTS
+// Огляди об’єктів — не як діалог, а як document / examine content.
 // =====================================================
 
-=== taxi_ride ===
+=== inspect_station_sign ===
+# trigger: interaction
+# ui: document_view
+# prompt: Оглянути табличку
+# repeatable: true
 
-~ route_taxi = true
-~ route_walk = false
+{ read_station_sign:
+    # style: document_text
+    СТОЯНКА ТАКСІ — праворуч.  
+    ЦЕНТРАЛЬНА ПЛОЩА — прямо.  
+    ЖИТЛОВІ КВАРТАЛИ — через площу, вниз уздовж трамвайних колій.
 
-Ти зачиняєш дверцята, і дощ одразу стає чужою проблемою.
+    # speaker: tommy_inner
+    # name: Томмі
+    # avatar: none
+    # style: inner_thought
+    Якщо заблукаєш тут у перші п’ять хвилин після повернення, доведеться списати це на дощ.
+- else:
+    # style: document_text
+    СТОЯНКА ТАКСІ — праворуч.  
+    ЦЕНТРАЛЬНА ПЛОЩА — прямо.  
+    ЖИТЛОВІ КВАРТАЛИ — через площу, вниз уздовж трамвайних колій.
 
-Таксі плавно відходить від вокзалу, розрізаючи калюжі колесами.  
-За вікном місто тягнеться вгору мокрими фасадами, неоновими вивісками й темними вікнами, за якими хтось ще не спить.
+    # speaker: tommy_inner
+    # name: Томмі
+    # avatar: none
+    # style: inner_thought
+    Місто ніби не дуже хотіло, щоб тут губилися. Принаймні — не випадково.
 
-{ heard_orphanage_news == false:
-    Таксист киває в бік великого муніципального плаката на розі.
-
-    Таксист:  
-    — Бачив? Сиротинець закривають. Кажуть, давно стояв порожній.
-
-    ~ heard_orphanage_news = true
+    ~ read_station_sign = true
 }
-
-Машина проїжджає повз стенд із гербом мерії.
-
-На ньому написано:
-
-“СТАРИЙ СИРОТИНЕЦЬ ЛІКВІДОВАНО.  
-БУДІВЛЯ НЕ ВИКОРИСТОВУЄТЬСЯ ЗА ПРИЗНАЧЕННЯМ ПОНАД П’ЯТНАДЦЯТЬ РОКІВ.”
-
-Ти машинально рахуєш.
-
-П’ятнадцять років тому ти ще був там.
-
-Ти пам’ятаєш:
-скрип сходів,  
-вечерю, яку завжди подавали запізно,  
-вікно в спальні, крізь яке було видно стару водонапірну вежу.
-
-Якщо будівля справді стояла порожньою, хто тоді відкривав тобі двері щоранку?
-
-~ noticed_orphanage_inconsistency = true
-
-[НОВИЙ ФАКТ ОТРИМАНО: Офіційна інформація про сиротинець суперечить спогадам Томмі.]
-
-[НОВИЙ ВИСНОВОК ДОСТУПНИЙ: “Сиротинець”.]
-
-Таксі звертає на тихішу вулицю, де будинки стоять щільно, ніби підтримують одне одного, щоб не впасти в ніч.
-
-Таксист:  
-— Приїхали. Сподіваюся, вдома в тебе сухіше, ніж у світі.
-
-Ти платиш, виходиш під дощ і піднімаєш комір плаща.
-
-Попереду — будинок, де на тебе чекає квартира.  
-І, можливо, кілька думок, які вже не так легко відкласти на завтра.
-
-~ reached_apartment_building = true
-
--> apartment_entrance
-
-
-// =====================================================
-// WALKING ROUTE START
-// =====================================================
-
-=== walk_departure ===
-
-~ route_walk = true
-~ route_taxi = false
-
-Ти обираєш пішу дорогу.
-
-Повітря пахне мокрим каменем, димом і жирною їжею з кіоску, який, судячи з черги, пережив щонайменше три економічні кризи.
-
-Кроки глухо відбиваються від плитки площі.  
-Над головою скрегоче трамвайна лінія.  
-Місто розгортається перед тобою без поспіху — наче перевіряє, чи ти справді вирішив повернутися.
-
-На розі висить великий офіційний плакат мерії:
-
-“СТАРИЙ СИРОТИНЕЦЬ ЛІКВІДОВАНО.  
-БУДІВЛЯ НЕ ВИКОРИСТОВУЄТЬСЯ ЗА ПРИЗНАЧЕННЯМ ПОНАД П’ЯТНАДЦЯТЬ РОКІВ.”
-
-Сиротинець.
-
-Ти зупиняєшся.
-
-Понад п’ятнадцять років?
-
-Ні.
-
-Ти жив там пізніше.  
-Ти пам’ятаєш його занадто добре, щоб погодитися з друкованою брехнею на міському стенді.
-
-{ heard_orphanage_news == false:
-    Отже, мерія справді закрила його.  
-    Або закрила щось, що тепер дуже хоче називати давно порожнім.
-    
-    ~ heard_orphanage_news = true
-}
-
-~ noticed_orphanage_inconsistency = true
-
-[НОВИЙ ФАКТ ОТРИМАНО: Офіційна інформація про сиротинець суперечить спогадам Томмі.]
-
-[НОВИЙ ВИСНОВОК ДОСТУПНИЙ: “Сиротинець”.]
-
-За кілька кварталів звідси — твій будинок.  
-Можна прямувати далі.
 
 -> DONE
 
 
-// =====================================================
-// STREET NOTICE BOARD
-// Optional object on the walking route
-// =====================================================
+=== inspect_newspaper_from_vendor ===
+# ui: document_view
+
+{ inspected_newspaper:
+    # style: document_text
+    Ти вже бачив головну шпальту. Та сама стаття. Та сама цифра.
+- else:
+    # style: document_text
+    “МЕРІЯ ЗАКРИВАЄ СТАРИЙ СИРОТИНЕЦЬ: БУДІВЛЯ НЕ ВИКОРИСТОВУВАЛАСЯ ЗА ПРИЗНАЧЕННЯМ ПОНАД П’ЯТНАДЦЯТЬ РОКІВ”.
+
+    ~ inspected_newspaper = true
+    ~ heard_orphanage_news = true
+
+    { noticed_orphanage_inconsistency == false:
+        # speaker: tommy_inner
+        # name: Томмі
+        # avatar: none
+        # style: inner_thought
+        П’ятнадцять років? Ні. Ти покинув той сиротинець значно пізніше.
+
+        ~ noticed_orphanage_inconsistency = true
+
+        { fact_orphanage_inconsistency_added == false:
+            ~ AddFact("official_info_about_the_orphanage_doesnt_fit_tommis_memory")
+            ~ fact_orphanage_inconsistency_added = true
+
+            # ui: toast
+            # style: system_fact
+            [НОВИЙ ФАКТ ОТРИМАНО: Офіційна версія про сиротинець не збігається зі спогадами Томмі.]
+        }
+
+        { conclusion_orphanage_unlocked == false:
+            ~ UnlockConclusion("orphanage")
+            ~ conclusion_orphanage_unlocked = true
+
+            # ui: toast
+            # style: system_conclusion
+            [НОВИЙ ВИСНОВОК ДОСТУПНИЙ: “Сиротинець”.]
+        }
+    - else:
+        # speaker: tommy_inner
+        # name: Томмі
+        # avatar: none
+        # style: inner_thought
+        Ти вже знаєш, що ця офіційна версія не сходиться з твоєю пам’яттю.
+    }
+}
+
+-> newspaper_vendor_menu
+
+
+=== inspect_newspaper_stand ===
+# trigger: interaction
+# ui: document_view
+# prompt: Оглянути газети
+# repeatable: true
+
+{ inspected_newspaper:
+    # style: document_text
+    Ти вже бачив головну шпальту. Та сама стаття про сиротинець.
+- else:
+    # style: document_text
+    “МЕРІЯ ЗАКРИВАЄ СТАРИЙ СИРОТИНЕЦЬ.”
+
+    # style: document_text
+    “Будівля не використовувалась за призначенням понад п’ятнадцять років.”
+
+    ~ inspected_newspaper = true
+    ~ heard_orphanage_news = true
+
+    { noticed_orphanage_inconsistency == false:
+        # speaker: tommy_inner
+        # name: Томмі
+        # avatar: none
+        # style: inner_thought
+        Понад п’ятнадцять? Ні. Ти жив там пізніше.
+
+        ~ noticed_orphanage_inconsistency = true
+
+        { fact_orphanage_inconsistency_added == false:
+            ~ AddFact("official_info_about_the_orphanage_doesnt_fit_tommis_memory")
+            ~ fact_orphanage_inconsistency_added = true
+
+            # ui: toast
+            # style: system_fact
+            [НОВИЙ ФАКТ ОТРИМАНО: Офіційна версія про сиротинець не збігається зі спогадами Томмі.]
+        }
+
+        { conclusion_orphanage_unlocked == false:
+            ~ UnlockConclusion("orphanage")
+            ~ conclusion_orphanage_unlocked = true
+
+            # ui: toast
+            # style: system_conclusion
+            [НОВИЙ ВИСНОВОК ДОСТУПНИЙ: “Сиротинець”.]
+        }
+    - else:
+        # speaker: tommy_inner
+        # name: Томмі
+        # avatar: none
+        # style: inner_thought
+        Знайома формула. Ти вже впіймав її на брехні.
+    }
+}
+
+-> DONE
+
 
 === street_notice_board ===
+# trigger: interaction
+# ui: document_view
+# prompt: Оглянути дошку оголошень
+# repeatable: true
 
 { inspected_notice_board:
-    Дошка оголошень усе ще висить криво.
+    # style: document_text
+    Повідомлення мерії про сиротинець — зверху. Під ним усе ще висить розмитий плакат про зниклого мешканця.
 
-    Повідомлення мерії про сиротинець — зверху.  
-    Під ним — недоладно приклеєний плакат про зниклого мешканця.
-
-    Місто любить шари паперу.  
-    Так легше не бачити, що було під ними.
+    # speaker: tommy_inner
+    # name: Томмі
+    # avatar: none
+    # style: inner_thought
+    Місто любить шари паперу. Так легше не бачити, що було під ними.
 - else:
-    Біля трамвайної зупинки стоїть стара дошка оголошень.  
-    Свіжі папірці наклеєні поверх старих, а старі — поверх ще старших.
+    # style: document_text
+    “МЕРІЯ ІНФОРМУЄ: СТАРИЙ СИРОТИНЕЦЬ ОСТАТОЧНО ВИВЕДЕНО З ЕКСПЛУАТАЦІЇ.”
 
-    Найпомітніше оголошення надруковане на дорогому кремовому папері:
-
-   “МЕРІЯ ІНФОРМУЄ:  
-    СТАРИЙ СИРОТИНЕЦЬ ОСТАТОЧНО ВИВЕДЕНО З ЕКСПЛУАТАЦІЇ.”
-
-    Нижче повторюється знайома фраза:
-
-    "Будівля не використовувалась за призначенням понад п’ятнадцять років.”
-
-    Знову ця цифра.
-
-    Знову нісенітниця.
+    # style: document_text
+    “Будівля не використовувалась за призначенням понад п’ятнадцять років.”
 
     ~ heard_orphanage_news = true
-    ~ noticed_orphanage_inconsistency = true
 
-    [НОВИЙ ФАКТ ОТРИМАНО: Повідомлення мерії суперечить пам’яті Томмі про сиротинець.]
+    { noticed_orphanage_inconsistency == false:
+        # speaker: tommy_inner
+        # name: Томмі
+        # avatar: none
+        # style: inner_thought
+        Знову ця цифра. Понад п’ятнадцять років — і знову нісенітниця.
 
-    Нижче, наполовину залите дощем, висить інше оголошення.
+        ~ noticed_orphanage_inconsistency = true
 
-    “ЗНИК…”
+        { fact_orphanage_inconsistency_added == false:
+            ~ AddFact("official_info_about_the_orphanage_doesnt_fit_tommis_memory")
+            ~ fact_orphanage_inconsistency_added = true
 
-    Ім’я розмилося або було відірване.  
-    Лишилася тільки розмитa фотографія сірого кота в пальті й номер, де останні цифри зникли під чужою рекламою.
+            # ui: toast
+            # style: system_fact
+            [НОВИЙ ФАКТ ОТРИМАНО: Повідомлення мерії суперечить пам’яті Томмі про сиротинець.]
+        }
+
+        { conclusion_orphanage_unlocked == false:
+            ~ UnlockConclusion("orphanage")
+            ~ conclusion_orphanage_unlocked = true
+
+            # ui: toast
+            # style: system_conclusion
+            [НОВИЙ ВИСНОВОК ДОСТУПНИЙ: “Сиротинець”.]
+        }
+    - else:
+        # speaker: tommy_inner
+        # name: Томмі
+        # avatar: none
+        # style: inner_thought
+        Та сама офіційна версія. Ти вже знаєш, де в ній тріщина.
+    }
+
+    # style: document_text
+    Нижче, наполовину залите дощем, висить інше оголошення: “ЗНИК…”
+
+    # style: document_text
+    Ім’я розмилося або було відірване. Лишилася тільки розмита фотографія сірого кота в пальті й номер, де останні цифри зникли під чужою рекламою.
+
+    # speaker: tommy_inner
+    # name: Томмі
+    # avatar: none
+    # style: inner_thought
+    Ти не знаєш, чи цей кіт знайшовся. Дошка не відповідає.
 
     ~ saw_missing_poster = true
-
-    Ти не знаєш, чи цей кіт знайшовся.  
-    Дошка не відповідає.
-
     ~ inspected_notice_board = true
 }
 
@@ -741,140 +966,286 @@ VAR orphanage_conclusion = 0
 
 
 // =====================================================
-// APARTMENT ENTRANCE
+// ROUTE BEATS
 // =====================================================
 
-=== apartment_entrance ===
+=== taxi_ride ===
+# ui: dialogue_panel
+
+~ route_taxi = true
+~ route_walk = false
+
+# style: narration
+Ти зачиняєш дверцята, і дощ одразу стає чужою проблемою.
+
+# style: narration
+Таксі плавно відходить від вокзалу. За вікном місто тягнеться вгору мокрими фасадами, неоновими вивісками й темними вікнами.
+
+{ heard_orphanage_news == false:
+    # speaker: npc_taxi_driver
+    # name: Таксист
+    # avatar: taxi_driver_01
+    # style: npc
+    Бачив? Сиротинець закривають. Кажуть, давно стояв порожній.
+
+    ~ heard_orphanage_news = true
+}
+
+# style: document_text
+На муніципальному плакаті за вікном написано: “СТАРИЙ СИРОТИНЕЦЬ ЛІКВІДОВАНО. БУДІВЛЯ НЕ ВИКОРИСТОВУЄТЬСЯ ЗА ПРИЗНАЧЕННЯМ ПОНАД П’ЯТНАДЦЯТЬ РОКІВ.”
+
+{ noticed_orphanage_inconsistency == false:
+    # speaker: tommy_inner
+    # name: Томмі
+    # avatar: none
+    # style: inner_thought
+    П’ятнадцять років тому ти ще був там. Якщо будівля справді стояла порожньою, хто тоді відкривав тобі двері щоранку?
+
+    ~ noticed_orphanage_inconsistency = true
+
+    { fact_orphanage_inconsistency_added == false:
+        ~ AddFact("official_info_about_the_orphanage_doesnt_fit_tommis_memory")
+        ~ fact_orphanage_inconsistency_added = true
+
+        # ui: toast
+        # style: system_fact
+        [НОВИЙ ФАКТ ОТРИМАНО: Офіційна інформація про сиротинець суперечить спогадам Томмі.]
+    }
+
+    { conclusion_orphanage_unlocked == false:
+        ~ UnlockConclusion("orphanage")
+        ~ conclusion_orphanage_unlocked = true
+
+        # ui: toast
+        # style: system_conclusion
+        [НОВИЙ ВИСНОВОК ДОСТУПНИЙ: “Сиротинець”.]
+    }
+- else:
+    # speaker: tommy_inner
+    # name: Томмі
+    # avatar: none
+    # style: inner_thought
+    Та сама офіційна цифра миготить уже й на міських плакатах.
+}
+
+# speaker: npc_taxi_driver
+# name: Таксист
+# avatar: taxi_driver_01
+# style: npc
+Приїхали. Сподіваюся, вдома в тебе сухіше, ніж у світі.
 
 ~ reached_apartment_building = true
 
-Будинок виглядає так, ніби в ньому давно навчилися не ставити зайвих питань.
+-> apartment_entrance
 
-Цегляний фасад, обдерті сходи, лампа над входом, яка час від часу кліпає — не зовсім зламано, просто без ентузіазму.
 
-Ти піднімаєшся на кілька сходинок і вже дістаєш ключ.
+=== walk_departure ===
+# ui: dialogue_panel
 
-Але думка про сиротинець не відпускає.
+~ route_walk = true
+~ route_taxi = false
 
-Дві деталі вперто стоять поруч:
-офіційна версія — і твоя пам’ять.
+# style: narration
+Ти обираєш пішу дорогу.
 
-Їх неможливо не звести докупи.
+# style: narration
+Повітря пахне мокрим каменем, димом і жирною їжею з кіоску. Над головою скрегоче трамвайна лінія.
+
+# style: document_text
+На розі висить офіційний плакат мерії: “СТАРИЙ СИРОТИНЕЦЬ ЛІКВІДОВАНО. БУДІВЛЯ НЕ ВИКОРИСТОВУЄТЬСЯ ЗА ПРИЗНАЧЕННЯМ ПОНАД П’ЯТНАДЦЯТЬ РОКІВ.”
+
+{ heard_orphanage_news == false:
+    ~ heard_orphanage_news = true
+}
+
+{ noticed_orphanage_inconsistency == false:
+    # speaker: tommy_inner
+    # name: Томмі
+    # avatar: none
+    # style: inner_thought
+    Понад п’ятнадцять років? Ні. Ти жив там пізніше. Ти пам’ятаєш його занадто добре, щоб погодитися з друкованою брехнею.
+
+    ~ noticed_orphanage_inconsistency = true
+
+    { fact_orphanage_inconsistency_added == false:
+        ~ AddFact("official_info_about_the_orphanage_doesnt_fit_tommis_memory")
+        ~ fact_orphanage_inconsistency_added = true
+
+        # ui: toast
+        # style: system_fact
+        [НОВИЙ ФАКТ ОТРИМАНО: Офіційна інформація про сиротинець суперечить спогадам Томмі.]
+    }
+
+    { conclusion_orphanage_unlocked == false:
+        ~ UnlockConclusion("orphanage")
+        ~ conclusion_orphanage_unlocked = true
+
+        # ui: toast
+        # style: system_conclusion
+        [НОВИЙ ВИСНОВОК ДОСТУПНИЙ: “Сиротинець”.]
+    }
+- else:
+    # speaker: tommy_inner
+    # name: Томмі
+    # avatar: none
+    # style: inner_thought
+    Ще один плакат. Та сама версія, яку ти вже не приймаєш на віру.
+}
+
+# style: narration
+За кілька кварталів звідси — твій будинок. Можна прямувати далі.
+
+-> DONE
+
+
+// =====================================================
+// APARTMENT / CONCLUSION FLOW
+// =====================================================
+
+=== apartment_entrance ===
+# trigger: interaction
+# ui: dialogue_panel
+# prompt: Підійти до дверей
+# repeatable: true
+
+~ reached_apartment_building = true
 
 { tutorial_conclusion_completed:
     -> apartment_final_text
 - else:
+    # style: narration
+    Ти вже дістаєш ключ, але думка про сиротинець не відпускає.
+
+    # style: narration
+    Офіційна версія й твоя пам’ять стоять поруч. Їх неможливо не звести докупи.
+
     -> tutorial_first_conclusion
 }
 
 
-// =====================================================
-// TUTORIAL CONCLUSION
-// =====================================================
-
 === tutorial_first_conclusion ===
 
-{ heard_orphanage_news && noticed_orphanage_inconsistency:
+{ heard_orphanage_news && noticed_orphanage_inconsistency && conclusion_orphanage_unlocked:
     -> tutorial_first_conclusion_intro
 - else:
-    Поки що думки не складаються в ясний висновок.
-
-    Ти відчуваєш, що пропустив якусь важливу деталь про сиротинець.
+    # speaker: tommy_inner
+    # name: Томмі
+    # avatar: none
+    # style: inner_thought
+    Поки що думки не складаються в ясний висновок. Ти відчуваєш, що пропустив якусь важливу деталь про сиротинець.
 
     -> DONE
 }
 
 
 === tutorial_first_conclusion_intro ===
+# ui: dialogue_panel
 
+# ui: toast
+# style: system_conclusion
 [ТУТОРІАЛ: ВИСНОВКИ]
 
-Іноді окремі факти нічого не означають.  
-Але варто поставити їх поруч — і між ними з’являється тріщина.
+# style: narration
+Іноді окремі факти нічого не означають. Але варто поставити їх поруч — і між ними з’являється тріщина.
 
-ФАКТ 1:
-Мерія стверджує, що старий сиротинець не використовувався за призначенням понад п’ятнадцять років.
+# style: narration
+ФАКТ 1: Мерія стверджує, що старий сиротинець не використовувався за призначенням понад п’ятнадцять років.
 
-ФАКТ 2:
-Томмі особисто жив у цьому сиротинці значно пізніше.
+# style: narration
+ФАКТ 2: Томмі особисто жив у цьому сиротинці значно пізніше.
 
+# style: narration
 Який попередній висновок ти робиш?
 
 + [У тексті просто помилка. Буває.]
     ~ orphanage_conclusion = 1
 
-    Можливо.
-
-    Газети помиляються.  
-    Чиновники помиляються.  
-    Місто тримається на помилках значно краще, ніж на правді.
-
-    І все ж ця конкретна помилка неприємно дряпає зсередини.
+    # speaker: tommy_inner
+    # name: Томмі
+    # avatar: none
+    # style: inner_thought
+    Можливо. Газети помиляються. Чиновники помиляються. І все ж ця конкретна помилка неприємно дряпає зсередини.
 
     -> tutorial_first_conclusion_finish
+
 
 + [Хтось навмисно переписує історію сиротинцю.]
     ~ orphanage_conclusion = 2
 
-    Дивна брехня.
-
-    Не така, що приносить негайний прибуток.  
-    Не така, яку кидають у натовп заради голосів.
-
-    Маленька, акуратна, майже непомітна.  
-    Саме такі брехні й варто запам’ятовувати.
+    # speaker: tommy_inner
+    # name: Томмі
+    # avatar: none
+    # style: inner_thought
+    Дивна брехня. Маленька, акуратна, майже непомітна. Саме такі брехні й варто запам’ятовувати.
 
     -> tutorial_first_conclusion_finish
+
 
 + [Мої спогади можуть бути менш надійними, ніж мені хотілося б.]
     ~ orphanage_conclusion = 3
 
-    Неприємна, але чесна думка.
-
-    Пам’ять не зберігає минуле.  
-    Вона щодня відтворює його з уламків.
-
-    Та все ж сиротинець — не розмитий сон.  
-    У тебе надто багато деталей для вигадки.
+    # speaker: tommy_inner
+    # name: Томмі
+    # avatar: none
+    # style: inner_thought
+    Неприємна, але чесна думка. Пам’ять не зберігає минуле — вона щодня відтворює його з уламків. Та сиротинець — не розмитий сон.
 
     -> tutorial_first_conclusion_finish
 
 
 === tutorial_first_conclusion_finish ===
 
-~ tutorial_conclusion_completed = true
+{ tutorial_conclusion_completed == false:
+    ~ tutorial_conclusion_completed = true
 
-[ВИСНОВОК ЗАФІКСОВАНО: Офіційна історія сиротинцю не збігається зі спогадами Томмі.]
+    # ui: toast
+    # style: system_conclusion
+    [ВИСНОВОК ЗАФІКСОВАНО: Офіційна історія сиротинцю не збігається зі спогадами Томмі.]
+}
 
 -> apartment_final_text
 
 
-// =====================================================
-// END OF PROLOGUE QUEST
-// =====================================================
-
 === apartment_final_text ===
 
-Ключ нарешті входить у замок.
+{ prologue_completed:
+    # speaker: tommy_inner
+    # name: Томмі
+    # avatar: none
+    # style: inner_thought
+    Лист Кітті вже у твоїй лапі. Час прочитати його.
 
-У ту ж мить ти помічаєш конверт на килимку біля дверей.  
-Хтось просунув його під поріг не дуже старанно — край усе ще стирчить назовні.
+    -> DONE
+- else:
+    # style: narration
+    Ключ нарешті входить у замок.
 
-На конверті немає марки.  
-Лише твоє ім’я.
+    # style: narration
+    На килимку біля дверей лежить конверт. Без марки. Лише твоє ім’я.
 
-І знайомий витончений почерк, який ти впізнав би навіть крізь дощ:
+    # style: document_text
+    “Томмі. Повернешся — знайди мене. Кітті.”
 
-Томмі.  
-Повернешся — знайди мене.  
-Кітті.
+    # speaker: tommy_inner
+    # name: Томмі
+    # avatar: none
+    # style: inner_thought
+    Знайомий витончений почерк. Ти впізнав би його навіть крізь дощ.
 
-Ти завмираєш на секунду довше, ніж потрібно.
+    ~ prologue_completed = true
 
-Потім піднімаєш конверт.
+    { objective_reach_apartment_completed == false:
+        ~ CompleteObjective("reach_apartment")
+        ~ objective_reach_apartment_completed = true
 
-[ЗАВДАННЯ ВИКОНАНО: Дістатися квартири.]
+        # ui: toast
+        # style: system_quest_complete
+        [ЗАВДАННЯ ВИКОНАНО: Дістатися квартири.]
+    }
 
-[НОВЕ ЗАВДАННЯ МОЖЕ БУТИ ДОДАНО ПІЗНІШЕ: Прочитати записку Кітті.]
+    # ui: toast
+    # style: system_quest
+    [НОВЕ ЗАВДАННЯ МОЖЕ БУТИ ДОДАНО ПІЗНІШЕ: Прочитати записку Кітті.]
 
--> DONE
+    -> DONE
+}

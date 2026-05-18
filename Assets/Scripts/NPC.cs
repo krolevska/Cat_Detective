@@ -8,7 +8,7 @@ public class NPC : MonoBehaviour, IInteractable
 
     public void Interact()
     {
-        narrativeDirector.Trigger(triggerId);
+        narrativeDirector.PlayKnot(triggerId);
     }
     public string InteractionPrompt => "Press E to talk to " + gameObject.name;
 }
