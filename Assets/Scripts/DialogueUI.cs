@@ -40,108 +40,50 @@ public class DialogueUI : MonoBehaviour
 
     }
 
-    public void Advance()
+    public void SetTextStyle(string value)
     {
-        if (!isDialogueOpen)
-            return;
+        Debug.Log($"Set text style: {value}");
 
-        if (choicesRoot.childCount > 0)
-            return;
-
-        if (story.canContinue)
+        switch (value)
         {
-            ShowNextBlock();
-            return;
-        }
-
-        if (story.currentChoices.Count == 0)
-        {
-            CloseDialogue();
+            case "narration":
+                break;
+            case "protagonist":
+                break;
+            case "npc":
+                break;
+            case "inner_thought":
+                break;
+            case "document_text":
+                break;
+            case "system_fact":
+                break;
+            case "system_quest":
+                break;
+            case "system_quest_complete":
+                break;
+            case "system_conclusion":
+                break;
+            default:
+                break;
         }
     }
-
-    private void ShowNextBlock()
+    public void SetSpeakerName(string value)
     {
-        ClearChoices();
+        Debug.Log($"Set speaker name: {value}");
 
-        while (story.canContinue)
-        {
-            string line = story.Continue().Trim();
-            List<string> tags = story.currentTags;
-
-            if (string.IsNullOrWhiteSpace(line))
-                continue;
-
-            AddLineToHistory(line, tags);
-
-            if (!story.canContinue && story.currentChoices.Count > 0)
-                ShowChoices();
-
-            return;
-        }
-
-        if (story.currentChoices.Count > 0)
-        {
-            ShowChoices();
-        }
     }
 
-    private void ShowChoices()
+    public void SetSpeakerAvatar(string value)
     {
-        ClearChoices();
-
-        for (int i = 0; i < story.currentChoices.Count; i++)
-        {
-            int choiceIndex = i;
-            Choice choice = story.currentChoices[i];
-
-            Button button = Instantiate(choiceButtonPrefab, choicesRoot);
-            TMP_Text buttonText = button.GetComponentInChildren<TMP_Text>();
-
-
-            button.onClick.AddListener(() =>
-            {
-                story.ChooseChoiceIndex(choiceIndex);
-                ClearChoices();
-                ShowNextBlock();
-            });
-        }
+        Debug.Log($"Set speaker avatar: {value}");
     }
-    private void AddLineToHistory(string rawLine, List<string> tags)
+
+    public void SetPrompt(string value)
     {
-        TMP_Text line = Instantiate(linePrefab, historyRoot);
-        line.text = FormatLineForDialogueFeed(rawLine, tags);
-
-        Canvas.ForceUpdateCanvases();
-
-        if (scrollRect != null)
-            scrollRect.verticalNormalizedPosition = 0f;
+        Debug.Log($"Set prompt: {value}");
     }
-    private string FormatLineForDialogueFeed(string line, List<string> tags)
-    {
-        // Системні повідомлення: [НОВИЙ ФАКТ...], [ЗАВДАННЯ...]
-        if (line.StartsWith("[") && line.EndsWith("]"))
-        {
-            return $"<i>{line}</i>";
-        }
 
-        int colonIndex = line.IndexOf(':');
-
-        if (
-            colonIndex > 0 &&
-            colonIndex < 35 &&
-            !line.StartsWith("<b>") &&
-            !line.StartsWith("[")
-        )
-        {
-            string speaker = line.Substring(0, colonIndex).Trim();
-            string body = line.Substring(colonIndex + 1).Trim();
-
-            return $"<b>{speaker}</b>\n{body}";
-        }
-
-        return line;
-    }
 
     public void RemoveChildren()
     {
@@ -170,6 +112,7 @@ public class DialogueUI : MonoBehaviour
     }
     public void ShowText(string text)
     {
+        Debug.Log($"Show text: {text}");
         GameObject dialogueText = Instantiate(dialogueTextPrefab, dialoguePanel.transform);
         TextMeshProUGUI dialogueTextComponent = dialogueText.GetComponent<TextMeshProUGUI>();
         dialogueTextComponent.text = text;
