@@ -1,4 +1,3 @@
-using Ink.Runtime;
 using System;
 using System.Collections.Generic;
 using TMPro;
@@ -13,12 +12,11 @@ public class DialogueUI : MonoBehaviour
     [SerializeField] private GameObject npcNameTextPrefab;
     [SerializeField] private GameObject dialogueTextPrefab;
     [SerializeField] private Button choiceButtonPrefab;
-    [SerializeField] private Transform historyRoot;
-    [SerializeField] private TMP_Text linePrefab;
+//    [SerializeField] private Transform historyRoot;
+//    [SerializeField] private TMP_Text linePrefab;
     [SerializeField] private Transform choicesRoot;
-    [SerializeField] private ScrollRect scrollRect;
+//    [SerializeField] private ScrollRect scrollRect;
 
-    private Story story;
     private bool isDialogueOpen = false;
     public bool IsDialogueOpen => isDialogueOpen;
 
@@ -35,9 +33,6 @@ public class DialogueUI : MonoBehaviour
             return;
         }
         Instance = this;
-
-        dialoguePanel.SetActive(false);
-
     }
 
     public void SetTextStyle(string value)
@@ -71,19 +66,20 @@ public class DialogueUI : MonoBehaviour
     public void SetSpeakerName(string value)
     {
         Debug.Log($"Set speaker name: {value}");
-
+        npcNameTextPrefab.GetComponent<TextMeshProUGUI>().text = value;
     }
 
     public void SetSpeakerAvatar(string value)
     {
         Debug.Log($"Set speaker avatar: {value}");
+        npcImage.GetComponent<Image>().sprite = Resources.Load<Sprite>(value);
     }
 
     public void SetPrompt(string value)
     {
         Debug.Log($"Set prompt: {value}");
+        
     }
-
 
     public void RemoveChildren()
     {
@@ -92,23 +88,10 @@ public class DialogueUI : MonoBehaviour
             Destroy(child.gameObject);
         }
     }
-
-    public void RefreshView(Story story)
-    {
-        RemoveChildren();
-        // ShowNPCInfo();
-        ShowText("This is a sample dialogue text. Replace this with actual dialogue from the Ink story.");
-        ShowChoices(story);
-    }
-
-    public void ShowNPCInfo(string npcName, Sprite npcSprite)
+    public void ShowNPCInfo()
     {
         GameObject nameText = Instantiate(npcNameTextPrefab, dialoguePanel.transform);
-        TextMeshProUGUI nameTextComponent = nameText.GetComponent<TextMeshProUGUI>();
-        nameTextComponent.text = npcName;
-        GameObject image = Instantiate(npcImage, dialoguePanel.transform);
-        Image imageComponent = image.GetComponent<Image>();
-        imageComponent.sprite = npcSprite;
+        GameObject image = Instantiate(npcImage, dialoguePanel.transform);        
     }
     public void ShowText(string text)
     {
@@ -118,24 +101,25 @@ public class DialogueUI : MonoBehaviour
         dialogueTextComponent.text = text;
     }
 
-    public void ShowChoices(Story story)
+    public void ShowChoices(string[] choices)
     {
-        if (story.currentChoices.Count > 0)
+        if (choices.Length > 0)
         {
-            for (int i = 0; i < story.currentChoices.Count; i++)
+            for (int i = 0; i < choices.Length; i++)
             {
-                Choice choice = story.currentChoices[i];
-                Button button = CreateChoiceButton(choice.text.Trim(), i);
+                string choice = choices[i];
+                Button button = CreateChoiceButton(choice, i);
                 button.onClick.AddListener(delegate
                 {
-                    story.ChooseChoiceIndex(choice.index);
+                    NarrativeDirector.Instance.MakeChoice(i);
                 });
+                Debug.Log($"Show choice: {choice}, index {i}");
             }
         }
         else
         {
             Button choice = CreateChoiceButton("End Dialogue", 0);
-            choice.onClick.AddListener(RemoveChildren);
+            choice.onClick.AddListener(CloseDialogue);
         }
     }
 
@@ -143,29 +127,31 @@ public class DialogueUI : MonoBehaviour
     {
 
         Button button = Instantiate(choiceButtonPrefab).GetComponent<Button>();
-        button.transform.SetParent(dialoguePanel.transform, false);
+        button.transform.SetParent(choicesRoot.transform, false);
 
         TextMeshProUGUI buttonText = button.GetComponentInChildren<TextMeshProUGUI>();
         buttonText.text = text;
 
         var rt = button.GetComponent<RectTransform>();
-        rt.anchoredPosition = new Vector2(300f, -130 - index * 50f);
+        rt.anchoredPosition = new Vector2(0, 0 - index * 50f);
 
         return button;
     }
 
-    private void OpenDialogue()
+    public void OpenDialogue()
     {
         isDialogueOpen = true;
         dialoguePanel.SetActive(true);
+        ShowNPCInfo();
         DialogueOpened?.Invoke();
     }
 
-    private void CloseDialogue()
+    public void CloseDialogue()
     {
         isDialogueOpen = false;
         dialoguePanel.SetActive(false);
         ClearChoices();
+        RemoveChildren();
         DialogueClosed?.Invoke();
     }
 

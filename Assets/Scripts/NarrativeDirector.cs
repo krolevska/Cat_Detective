@@ -1,6 +1,4 @@
-using Ink.Parsed;
 using Ink.Runtime;
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -14,7 +12,7 @@ public class NarrativeDirector : MonoBehaviour
 
     [SerializeField] private TextAsset sceneInkJSON = null;
 
-    private Ink.Runtime.Story story;
+    private Story story;
 
     public static NarrativeDirector Instance { get; private set; }
     public void Awake()
@@ -25,7 +23,7 @@ public class NarrativeDirector : MonoBehaviour
             return;
         }
         Instance = this;
-        story = new Ink.Runtime.Story(sceneInkJSON.text);
+        story = new Story(sceneInkJSON.text);
 
         story.onError += (message, type) =>
         {
@@ -49,6 +47,7 @@ public class NarrativeDirector : MonoBehaviour
 
         if (story.KnotContainerWithName(knotName) != null)
         {
+            DialogueUI.Instance.OpenDialogue();
             story.ChoosePathString(knotName);
             ContinueStory();
         }
@@ -63,6 +62,11 @@ public class NarrativeDirector : MonoBehaviour
         {
             ProcessTags(story.currentTags);
             ProcessText(story.Continue().Trim());
+        }
+
+        if (story.currentChoices.Count > 0)
+        {
+            PassChoicesToUI(story.currentChoices.ToArray());
         }
     }
 
@@ -106,7 +110,6 @@ public class NarrativeDirector : MonoBehaviour
             }
         }
     }
-
     private void PassTagsToUI(string key, string value)
     {
         switch (key)
@@ -141,6 +144,26 @@ public class NarrativeDirector : MonoBehaviour
         // Тут можна додати додаткову обробку тексту, якщо потрібно
     }
 
+    private void PassChoicesToUI(Choice[] choices)
+    {
+        string[] choiceTexts = new string[choices.Length];
+        for (int i = 0; i < choices.Length; i++)
+        {
+            choiceTexts[i] = choices[i].text.Trim();
+        }
+        DialogueUI.Instance.ShowChoices(choiceTexts);
+    }
+
+    public void MakeChoice(int choiceIndex)
+    {
+        if (choiceIndex < 0 || choiceIndex >= story.currentChoices.Count)
+        {
+            Debug.LogWarning("Invalid choice index: " + choiceIndex);
+            return;
+        }
+        story.ChooseChoiceIndex(choiceIndex);
+        ContinueStory();
+    }
     private void PassTextToUI(string text)
     {
         DialogueUI.Instance.ShowText(text);

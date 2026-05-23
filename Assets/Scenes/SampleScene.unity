@@ -729,7 +729,8 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 335039595}
   m_Father: {fileID: 167874198}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
@@ -750,7 +751,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.16470589, g: 0.19607845, b: 0.14117648, a: 1}
+  m_Color: {r: 0.16037738, g: 0.16037738, b: 0.16037738, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -1330,6 +1331,41 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+--- !u!1 &335039594
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 335039595}
+  m_Layer: 5
+  m_Name: ChoicesRoot
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &335039595
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 335039594}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 145428069}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 448, y: -256}
+  m_SizeDelta: {x: 1408, y: 192}
+  m_Pivot: {x: 0, y: 1}
 --- !u!1 &397512429
 GameObject:
   m_ObjectHideFlags: 0
@@ -1970,9 +2006,9 @@ Camera:
   m_NormalizedViewPortRect:
     serializedVersion: 2
     x: 0
-    y: 0
-    width: 1
-    height: 1
+    y: 0.055555556
+    width: 0.33333334
+    height: 0.3333333
   near clip plane: 0.3
   far clip plane: 1000
   field of view: 34
@@ -2313,6 +2349,70 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+--- !u!1 &726825008
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 726825010}
+  - component: {fileID: 726825009}
+  - component: {fileID: 726825011}
+  m_Layer: 0
+  m_Name: NarrativeDirector
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &726825009
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 726825008}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9dc79357f563072429ceb305702d8f50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NarrativeDirector
+  sceneInkJSON: {fileID: 4900000, guid: 0443089d9dc49bc4cb90d7cef6bc8e94, type: 3}
+--- !u!4 &726825010
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 726825008}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 3.06888, y: 0.16495, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &726825011
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 726825008}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 63a7d5ee83b45c541b9d780ace520ded, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DialogueUI
+  dialoguePanel: {fileID: 145428068}
+  npcImage: {fileID: 7986175176050612211, guid: 7fb05104b0fa2c4499f399a8f13ce185, type: 3}
+  npcNameTextPrefab: {fileID: 8487386083770238018, guid: 60780f8da46c3dd40a510adff275f930, type: 3}
+  dialogueTextPrefab: {fileID: 2147207941675345624, guid: 95787937816bfd6448afecd9b8f660d4, type: 3}
+  choiceButtonPrefab: {fileID: 4234604782136148540, guid: d49fd39fcdd3c7940ad02f8aecb5fe4f, type: 3}
+  choicesRoot: {fileID: 335039595}
 --- !u!1 &773685053
 GameObject:
   m_ObjectHideFlags: 0
@@ -25687,7 +25787,6 @@ MonoBehaviour:
   obstacleLayer:
     serializedVersion: 2
     m_Bits: 0
-  mainCamera: {fileID: 519420031}
   playerRigidbody: {fileID: 1616392146}
   moveAction: {fileID: 211851726226117831, guid: b8adf287dc1dcbf4ab3023e34bdfe406, type: 3}
 --- !u!50 &1616392146
@@ -25729,14 +25828,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: af500eca1f8a0c84db06969a923705a7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerInteraction
-  interactableLayer:
-    serializedVersion: 2
-    m_Bits: 64
-  NPCInteraction:
-    serializedVersion: 2
-    m_Bits: 128
-  interactionRange: 5
-  playerCamera: {fileID: 519420032}
   interactAction: {fileID: -6826061504823027163, guid: b8adf287dc1dcbf4ab3023e34bdfe406, type: 3}
   interactionPrompt: {fileID: 1233298264}
 --- !u!95 &1616392150
@@ -26703,6 +26794,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c1aee9467338ed74c96ba4ff669cdf30, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Item
+  narrativeDirector: {fileID: 0}
+  triggerId: 
 --- !u!1 &2046402792
 GameObject:
   m_ObjectHideFlags: 0
@@ -26988,7 +27081,6 @@ GameObject:
   - component: {fileID: 2120727094}
   - component: {fileID: 2120727093}
   - component: {fileID: 2120727096}
-  - component: {fileID: 2120727097}
   m_Layer: 7
   m_Name: News_Guy
   m_TagString: Untagged
@@ -27116,35 +27208,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5c3343d806b4e2244bc8f9ca2aa5a77e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NPC
-  player: {fileID: 1616392142}
-  dialogueController: {fileID: 2120727097}
-  dialogueDistance: 3
---- !u!114 &2120727097
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2120727092}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 499f45e3dff24f24abdaab05fe31398d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DialogueController
-  dialoguePanel: {fileID: 145428068}
-  inkJSONAsset: {fileID: 4900000, guid: 5e651857a37e39348b6c6eaaa5705de4, type: 3}
-  player: {fileID: 1616392142}
-  npcImage: {fileID: 131254592363361918, guid: 536363c4f5d1e8e45bd847e9889306a3, type: 3}
-  npcNameTextPrefab: {fileID: 5275924308843506778, guid: a22af6600bec0b74f87aeed62b35e86b, type: 3}
-  dialogueTextPrefab: {fileID: 4286837463252771822, guid: ee6b8d2055260524faf5a238c75a6886, type: 3}
-  choiceButtonPrefab: {fileID: 1006103609543530273, guid: 6ade9382f57e57b458b5c01f9c73b895, type: 3}
-  reputationLevel: 0
-  money: 0
-  cigarettes: 0
-  inventoryItems: []
-  questInfo: []
-  npcName: NPC Name
-  npcSprite: {fileID: 4846749676772436633, guid: 83a41302d65d2814db4722a473b25583, type: 3}
+  triggerId: newspaper_vendor
+  narrativeDirector: {fileID: 726825009}
 --- !u!1 &2125724706
 GameObject:
   m_ObjectHideFlags: 0
@@ -27440,3 +27505,4 @@ SceneRoots:
   - {fileID: 2053443249}
   - {fileID: 167874198}
   - {fileID: 885703977}
+  - {fileID: 726825010}
