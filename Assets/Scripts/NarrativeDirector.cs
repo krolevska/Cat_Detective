@@ -12,19 +12,21 @@ public class NarrativeDirector : MonoBehaviour
 
     [SerializeField] private TextAsset sceneInkJSON = null;
 
+    [Header("Refs")]
+    [SerializeField] private DialogueUI dialogueUI;
+
     private Story story;
 
     public static NarrativeDirector Instance { get; private set; }
 
     private void OnEnable()
     {
-        DialogueUI.Instance.ChoiceSelected += MakeChoice;
+        if (dialogueUI != null) dialogueUI.ChoiceSelected += MakeChoice;
     }
 
     private void OnDisable()
     {
-        if (DialogueUI.Instance != null)
-            DialogueUI.Instance.ChoiceSelected -= MakeChoice;
+        if (dialogueUI != null) dialogueUI.ChoiceSelected -= MakeChoice;
     }
 
     public void Awake()

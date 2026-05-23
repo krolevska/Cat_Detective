@@ -85,22 +85,32 @@ public class DialogueUI : MonoBehaviour
 
     }
 
-    public void RemoveChildren()
+    public void ClearText()
     {
         foreach (Transform child in textRoot)
         {
-            if (child != null) Destroy(child.gameObject);
+            Destroy(child.gameObject);
         }
+    }
+
+    public void ClearChoices()
+    {
         foreach (Transform child in choicesRoot)
         {
-            if (child != null) Destroy(child.gameObject);
+            Destroy(child.gameObject);
         }
+    }
+
+    public void ClearDialogue()
+    {
+        ClearText();
+        ClearChoices();
     }
     public void ShowText(string text)
     {
-        RemoveChildren();
         Debug.Log($"Show text: {text}");
-        GameObject dialogueText = Instantiate(dialogueTextPrefab, textRoot.transform);
+
+        GameObject dialogueText = Instantiate(dialogueTextPrefab, textRoot);
         TextMeshProUGUI dialogueTextComponent = dialogueText.GetComponent<TextMeshProUGUI>();
         dialogueTextComponent.text = text;
     }
@@ -113,13 +123,15 @@ public class DialogueUI : MonoBehaviour
         {
             for (int i = 0; i < choices.Length; i++)
             {
-                DialogueChoiceData choice = choices[i];
+                int buttonIndex = i;
+                int inkChoiceIndex = choices[i].InkChoiceIndex;
+                string choiceText = choices[i].Text;
 
-                Button button = CreateChoiceButton(choice.Text, i);
+                Button button = CreateChoiceButton(choiceText, buttonIndex);
 
                 button.onClick.AddListener(() =>
                 {
-                    ChoiceSelected?.Invoke(choice.InkChoiceIndex);
+                    ChoiceSelected?.Invoke(inkChoiceIndex);
                 });
             }
         }
@@ -139,9 +151,6 @@ public class DialogueUI : MonoBehaviour
         TextMeshProUGUI buttonText = button.GetComponentInChildren<TextMeshProUGUI>();
         buttonText.text = text;
 
-        var rt = button.GetComponent<RectTransform>();
-        rt.anchoredPosition = new Vector2(0, 0 - index * 50f);
-
         return button;
     }
 
@@ -149,6 +158,9 @@ public class DialogueUI : MonoBehaviour
     {
         isDialogueOpen = true;
         dialoguePanel.SetActive(true);
+
+        ClearDialogue();
+
         DialogueOpened?.Invoke();
     }
 
@@ -156,16 +168,9 @@ public class DialogueUI : MonoBehaviour
     {
         isDialogueOpen = false;
         dialoguePanel.SetActive(false);
-        ClearChoices();
-        RemoveChildren();
-        DialogueClosed?.Invoke();
-    }
 
-    public void ClearChoices()
-    {
-        foreach (Transform child in choicesRoot)
-        {
-            Destroy(child.gameObject);
-        }
+        ClearDialogue();
+
+        DialogueClosed?.Invoke();
     }
 }
