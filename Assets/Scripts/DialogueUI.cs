@@ -8,20 +8,24 @@ public class DialogueUI : MonoBehaviour
 {
     [Header("UI")]
     [SerializeField] private GameObject dialoguePanel;
-    [SerializeField] private GameObject npcImage;
-    [SerializeField] private GameObject npcNameTextPrefab;
+    [SerializeField] private Image speakerImage;
+    [SerializeField] private TextMeshProUGUI speakerNameText;
     [SerializeField] private GameObject dialogueTextPrefab;
     [SerializeField] private Button choiceButtonPrefab;
-//    [SerializeField] private Transform historyRoot;
-//    [SerializeField] private TMP_Text linePrefab;
+    //    [SerializeField] private Transform historyRoot;
+    //    [SerializeField] private TMP_Text linePrefab;
     [SerializeField] private Transform choicesRoot;
-//    [SerializeField] private ScrollRect scrollRect;
+    [SerializeField] private Transform textRoot;
+    [SerializeField] private Transform npcImageRoot;
+    [SerializeField] private Transform npcNameRoot;
+    //    [SerializeField] private ScrollRect scrollRect;
 
     private bool isDialogueOpen = false;
     public bool IsDialogueOpen => isDialogueOpen;
 
     public event Action DialogueOpened;
     public event Action DialogueClosed;
+    public event Action<int> ChoiceSelected;
 
     public static DialogueUI Instance { get; private set; }
 
@@ -66,60 +70,63 @@ public class DialogueUI : MonoBehaviour
     public void SetSpeakerName(string value)
     {
         Debug.Log($"Set speaker name: {value}");
-        npcNameTextPrefab.GetComponent<TextMeshProUGUI>().text = value;
+        speakerNameText.text = value;
     }
 
     public void SetSpeakerAvatar(string value)
     {
         Debug.Log($"Set speaker avatar: {value}");
-        npcImage.GetComponent<Image>().sprite = Resources.Load<Sprite>(value);
+        speakerImage.sprite = Resources.Load<Sprite>(value);
     }
 
     public void SetPrompt(string value)
     {
         Debug.Log($"Set prompt: {value}");
-        
+
     }
 
     public void RemoveChildren()
     {
-        foreach (Transform child in dialoguePanel.transform)
+        foreach (Transform child in textRoot)
         {
-            Destroy(child.gameObject);
+            if (child != null) Destroy(child.gameObject);
         }
-    }
-    public void ShowNPCInfo()
-    {
-        GameObject nameText = Instantiate(npcNameTextPrefab, dialoguePanel.transform);
-        GameObject image = Instantiate(npcImage, dialoguePanel.transform);        
+        foreach (Transform child in choicesRoot)
+        {
+            if (child != null) Destroy(child.gameObject);
+        }
     }
     public void ShowText(string text)
     {
+        RemoveChildren();
         Debug.Log($"Show text: {text}");
-        GameObject dialogueText = Instantiate(dialogueTextPrefab, dialoguePanel.transform);
+        GameObject dialogueText = Instantiate(dialogueTextPrefab, textRoot.transform);
         TextMeshProUGUI dialogueTextComponent = dialogueText.GetComponent<TextMeshProUGUI>();
         dialogueTextComponent.text = text;
     }
 
-    public void ShowChoices(string[] choices)
+    public void ShowChoices(DialogueChoiceData[] choices)
     {
+        ClearChoices();
+
         if (choices.Length > 0)
         {
             for (int i = 0; i < choices.Length; i++)
             {
-                string choice = choices[i];
-                Button button = CreateChoiceButton(choice, i);
-                button.onClick.AddListener(delegate
+                DialogueChoiceData choice = choices[i];
+
+                Button button = CreateChoiceButton(choice.Text, i);
+
+                button.onClick.AddListener(() =>
                 {
-                    NarrativeDirector.Instance.MakeChoice(i);
+                    ChoiceSelected?.Invoke(choice.InkChoiceIndex);
                 });
-                Debug.Log($"Show choice: {choice}, index {i}");
             }
         }
         else
         {
-            Button choice = CreateChoiceButton("End Dialogue", 0);
-            choice.onClick.AddListener(CloseDialogue);
+            Button button = CreateChoiceButton("Вийти", 0);
+            button.onClick.AddListener(CloseDialogue);
         }
     }
 
@@ -142,7 +149,6 @@ public class DialogueUI : MonoBehaviour
     {
         isDialogueOpen = true;
         dialoguePanel.SetActive(true);
-        ShowNPCInfo();
         DialogueOpened?.Invoke();
     }
 
@@ -155,9 +161,11 @@ public class DialogueUI : MonoBehaviour
         DialogueClosed?.Invoke();
     }
 
-    private void ClearChoices()
+    public void ClearChoices()
     {
         foreach (Transform child in choicesRoot)
+        {
             Destroy(child.gameObject);
+        }
     }
 }

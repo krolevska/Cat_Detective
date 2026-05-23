@@ -15,6 +15,18 @@ public class NarrativeDirector : MonoBehaviour
     private Story story;
 
     public static NarrativeDirector Instance { get; private set; }
+
+    private void OnEnable()
+    {
+        DialogueUI.Instance.ChoiceSelected += MakeChoice;
+    }
+
+    private void OnDisable()
+    {
+        if (DialogueUI.Instance != null)
+            DialogueUI.Instance.ChoiceSelected -= MakeChoice;
+    }
+
     public void Awake()
     {
         if (Instance != null && Instance != this)
@@ -58,16 +70,21 @@ public class NarrativeDirector : MonoBehaviour
     }
     private void ContinueStory()
     {
+        DialogueUI.Instance.ClearChoices();
+
         while (story.canContinue)
         {
+            string text = story.Continue().Trim();
+
             ProcessTags(story.currentTags);
-            ProcessText(story.Continue().Trim());
+
+            if (!string.IsNullOrWhiteSpace(text))
+            {
+                ProcessText(text);
+            }
         }
 
-        if (story.currentChoices.Count > 0)
-        {
-            PassChoicesToUI(story.currentChoices.ToArray());
-        }
+        PassChoicesToUI(story.currentChoices.ToArray());
     }
 
     private void BindExternalFunctions()
@@ -146,12 +163,17 @@ public class NarrativeDirector : MonoBehaviour
 
     private void PassChoicesToUI(Choice[] choices)
     {
-        string[] choiceTexts = new string[choices.Length];
+        DialogueChoiceData[] choiceData = new DialogueChoiceData[choices.Length];
+
         for (int i = 0; i < choices.Length; i++)
         {
-            choiceTexts[i] = choices[i].text.Trim();
+            choiceData[i] = new DialogueChoiceData(
+                choices[i].text.Trim(),
+                choices[i].index
+            );
         }
-        DialogueUI.Instance.ShowChoices(choiceTexts);
+
+        DialogueUI.Instance.ShowChoices(choiceData);
     }
 
     public void MakeChoice(int choiceIndex)
@@ -161,6 +183,9 @@ public class NarrativeDirector : MonoBehaviour
             Debug.LogWarning("Invalid choice index: " + choiceIndex);
             return;
         }
+
+        DialogueUI.Instance.ClearChoices();
+
         story.ChooseChoiceIndex(choiceIndex);
         ContinueStory();
     }
@@ -176,5 +201,17 @@ public class NarrativeDirector : MonoBehaviour
     public void LoadInkState(string json)
     {
         story.state.LoadJson(json);
+    }
+}
+
+public struct DialogueChoiceData
+{
+    public string Text;
+    public int InkChoiceIndex;
+
+    public DialogueChoiceData(string text, int inkChoiceIndex)
+    {
+        Text = text;
+        InkChoiceIndex = inkChoiceIndex;
     }
 }
