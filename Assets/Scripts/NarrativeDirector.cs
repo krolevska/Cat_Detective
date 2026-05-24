@@ -11,6 +11,7 @@ public class NarrativeDirector : MonoBehaviour
     [SerializeField] private DialogueUI dialogueUI;
     [SerializeField] private PlayerMovement playerMovement;
     [SerializeField] private PlayerInteraction playerInteraction;
+    [SerializeField] private CaseManager caseManager;
 
     private Story story;
 
@@ -23,6 +24,10 @@ public class NarrativeDirector : MonoBehaviour
             dialogueUI.ChoiceSelected += MakeChoice;
             dialogueUI.DialogueClosed += EndNarrativeInteraction;
         }
+        if (caseManager != null)
+        {
+            caseManager.caseResolved += PassObjectiveConclusionToInk;
+        }
 
     }
 
@@ -32,6 +37,11 @@ public class NarrativeDirector : MonoBehaviour
         {
             dialogueUI.ChoiceSelected -= MakeChoice;
             dialogueUI.DialogueClosed -= EndNarrativeInteraction;
+        }
+
+        if (caseManager != null)
+        {
+            caseManager.caseResolved -= PassObjectiveConclusionToInk;
         }
     }
 
@@ -111,7 +121,7 @@ public class NarrativeDirector : MonoBehaviour
         story.BindExternalFunction("AddFact", (string factId) =>
         {
             Debug.Log($"New fact unlocked: {factId}");
-            // FactJournal.Instance.Unlock(factId);
+            ClueManager.Instance.AddClueById(factId);
         });
 
         story.BindExternalFunction("UnlockConclusion", (string conclusionId) =>
@@ -123,13 +133,13 @@ public class NarrativeDirector : MonoBehaviour
         story.BindExternalFunction("UpdateObjective", (string objectiveId) =>
         {
             Debug.Log($"Objective updated: {objectiveId}");
-            // QuestLog.Instance.SetObjective(objectiveId);
+            CaseManager.Instance.AddCase(objectiveId);
         });
 
         story.BindExternalFunction("CompleteObjective", (string objectiveId) =>
         {
             Debug.Log($"Objective updated: {objectiveId}");
-            // QuestLog.Instance.SetObjective(objectiveId);
+            CaseManager.Instance.ConcludeCase(objectiveId);
         });
     }
     private void ProcessTags(List<string> tags)
@@ -211,6 +221,11 @@ public class NarrativeDirector : MonoBehaviour
     private void PassTextToUI(string text)
     {
         DialogueUI.Instance.ShowText(text);
+    }
+
+    private void PassObjectiveConclusionToInk(string objectiveId)
+    {
+        story.variablesState[objectiveId] = true;
     }
     public string SaveInkState()
     {
