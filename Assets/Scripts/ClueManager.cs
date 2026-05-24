@@ -6,6 +6,7 @@ public class ClueManager : MonoBehaviour
     public static ClueManager Instance { get; private set; }
 
     public List<ClueObject> clueObjects;
+    public List<ClueDataSO> availableClues;
 
 
     public void Awake()
@@ -27,7 +28,25 @@ public class ClueManager : MonoBehaviour
         }
         return false;
     }
+    public bool AddClueById(string clueId)
+    {
+        bool canAdd = !HasClue(clueId);
+        if (canAdd)
+        {
+            ClueDataSO clueData = availableClues.Find(c => c.clueId == clueId);
+            if (clueData != null)
+            {
+                AddClue(clueData);
+                return true;
+            }
+            else
+            {
+                Debug.LogWarning("Clue data not found for ID: " + clueId);
+            }
+        }
 
+        return canAdd;
+    }
     public void AddClue(ClueDataSO clue)
     {
         // Add the clue to the player's inventory or clue log
