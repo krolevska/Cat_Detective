@@ -7,4 +7,6 @@ public class CaseDataSO : ScriptableObject
     public string caseName;
     public List<ClueDataSO> requiredClues;
     public List<ClueDataSO> optionalClues;
+
+    public CaseState caseState = CaseState.NotStarted;
 }
