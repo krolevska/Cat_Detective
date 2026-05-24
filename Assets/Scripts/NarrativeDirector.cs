@@ -4,16 +4,13 @@ using UnityEngine;
 
 public class NarrativeDirector : MonoBehaviour
 {
-    /*
-     * Підключити показ тексту через DialogueUI
-     * Додати корисний debug message, якщо trigger ID не знайдено
-     * Перевірити, що різні тригери запускають різні фрагменти Ink story
-     */
-
+    
     [SerializeField] private TextAsset sceneInkJSON = null;
 
     [Header("Refs")]
     [SerializeField] private DialogueUI dialogueUI;
+    [SerializeField] private PlayerMovement playerMovement;
+    [SerializeField] private PlayerInteraction playerInteraction;
 
     private Story story;
 
@@ -21,12 +18,21 @@ public class NarrativeDirector : MonoBehaviour
 
     private void OnEnable()
     {
-        if (dialogueUI != null) dialogueUI.ChoiceSelected += MakeChoice;
+        if (dialogueUI != null)
+        {
+            dialogueUI.ChoiceSelected += MakeChoice;
+            dialogueUI.DialogueClosed += EndNarrativeInteraction;
+        }
+
     }
 
     private void OnDisable()
     {
-        if (dialogueUI != null) dialogueUI.ChoiceSelected -= MakeChoice;
+        if (dialogueUI != null)
+        {
+            dialogueUI.ChoiceSelected -= MakeChoice;
+            dialogueUI.DialogueClosed -= EndNarrativeInteraction;
+        }
     }
 
     public void Awake()
@@ -48,7 +54,18 @@ public class NarrativeDirector : MonoBehaviour
         };
         BindExternalFunctions();
     }
+    public void StartNarrativeInteraction(string knotName)
+    {
+        if (playerMovement != null) playerMovement.CanMove = false;
+        if (playerInteraction != null) playerInteraction.SetInteractionEnabled(false);
+        PlayKnot(knotName);
+    }
 
+    private void EndNarrativeInteraction()
+    {
+        if (playerMovement != null) playerMovement.CanMove = true;
+        if (playerInteraction != null) playerInteraction.SetInteractionEnabled(true);
+    }
     public void PlayKnot(string knotName)
     {
         if (string.IsNullOrWhiteSpace(knotName))
