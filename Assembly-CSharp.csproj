@@ -51,6 +51,7 @@
   <ItemGroup>
     <Compile Include="Assets\Scripts\CaseDataSO.cs" />
     <Compile Include="Assets\Scripts\NarrativeDirector.cs" />
+    <Compile Include="Assets\Scripts\CaseManager.cs" />
     <Compile Include="Assets\Scripts\ClueManager.cs" />
     <Compile Include="Assets\Scripts\NPC.cs" />
     <Compile Include="Assets\Scripts\IInteractable.cs" />

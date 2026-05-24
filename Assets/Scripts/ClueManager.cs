@@ -60,5 +60,3 @@ public class ClueManager : MonoBehaviour
 
     }
 }
-
-public enum CaseState { NotStarted, InProgress, Resolved }
