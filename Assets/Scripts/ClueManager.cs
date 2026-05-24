@@ -1,13 +1,20 @@
-using UnityEngine;
+using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 public class ClueManager : MonoBehaviour
 {
     public static ClueManager Instance { get; private set; }
 
+<<<<<<< Updated upstream
     public List<ClueObject> clueObjects;
 
+=======
+    [SerializeField] private List<ClueDataSO> collectedClues = new();
+    [SerializeField] private List<ClueDataSO> availableClues;
+>>>>>>> Stashed changes
 
+    public event Action<ClueDataSO> OnClueAdded;
     public void Awake()
     {
         if (Instance != null && Instance != this)
@@ -20,7 +27,7 @@ public class ClueManager : MonoBehaviour
     public bool HasClue(string clueId)
     {
         // Check if the player has the specified clue
-        if (clueObjects.Exists(c => c.clueData.clueId == clueId))
+        if (collectedClues.Exists(c => c.clueId == clueId))
         {
             Debug.Log("Player already has clue: " + clueId);
             return true;
@@ -33,7 +40,8 @@ public class ClueManager : MonoBehaviour
         // Add the clue to the player's inventory or clue log
         if (!HasClue(clue.clueId))
         {
-            clueObjects.Add(new ClueObject { clueData = clue });
+            collectedClues.Add(clue);
+            OnClueAdded?.Invoke(clue);
             Debug.Log("Clue added");
         }
 
