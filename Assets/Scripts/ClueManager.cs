@@ -6,14 +6,8 @@ public class ClueManager : MonoBehaviour
 {
     public static ClueManager Instance { get; private set; }
 
-<<<<<<< Updated upstream
-    public List<ClueObject> clueObjects;
-    public List<ClueDataSO> availableClues;
-
-=======
     [SerializeField] private List<ClueDataSO> collectedClues = new();
     [SerializeField] private List<ClueDataSO> availableClues;
->>>>>>> Stashed changes
 
     public event Action<ClueDataSO> OnClueAdded;
     public void Awake()
